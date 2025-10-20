@@ -1,0 +1,377 @@
+name: Code Quality
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/*
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  # ============================================================================
+  # PHP CS FIXER - Code Style Check
+  # ============================================================================
+  php-cs-fixer:
+    name: PHP CS Fixer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml
+          coverage: none
+          tools: composer:v2, cs2pr
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHP CS Fixer
+        run: |
+          vendor/bin/php-cs-fixer fix --dry-run --diff --format=checkstyle | cs2pr
+
+      - name: Annotate with PHP CS Fixer results
+        if: failure()
+        run: |
+          echo "::error::Code style issues found. Run 'make cs-fix' to fix them."
+
+  # ============================================================================
+  # PHPSTAN - Static Analysis
+  # ============================================================================
+  phpstan:
+    name: PHPStan (Level Max)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml, ctype, json
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --error-format=github --no-progress
+
+      - name: Generate PHPStan baseline (if needed)
+        if: failure()
+        run: |
+          vendor/bin/phpstan analyse --generate-baseline
+          echo "::warning::PHPStan baseline generated. Consider fixing issues instead of ignoring them."
+        continue-on-error: true
+
+  # ============================================================================
+  # PHPMD - Mess Detector
+  # ============================================================================
+  phpmd:
+    name: PHP Mess Detector
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPMD
+        run: vendor/bin/phpmd src github devkit/.config/phpmd/ruleset.xml
+        continue-on-error: true
+
+      - name: Upload PHPMD results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpmd-results
+          path: phpmd-report.xml
+        continue-on-error: true
+
+  # ============================================================================
+  # RECTOR - Automated Refactoring Check
+  # ============================================================================
+  rector:
+    name: Rector Dry Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml, ctype, json
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run Rector (dry-run)
+        run: vendor/bin/rector process --dry-run --no-progress-bar
+        continue-on-error: true
+
+      - name: Suggest improvements
+        if: failure()
+        run: |
+          echo "::warning::Rector found potential improvements. Run 'make rector-fix' to apply them."
+
+  # ============================================================================
+  # SECURITY AUDIT - Composer Security Check
+  # ============================================================================
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run security audit
+        run: composer audit --format=json > security-report.json
+        continue-on-error: true
+
+      - name: Check for vulnerabilities
+        run: |
+          VULNS=$(jq '.advisories | length' security-report.json)
+          if [ "$VULNS" -gt 0 ]; then
+            echo "::error::Found $VULNS security vulnerabilities"
+            cat security-report.json
+            exit 1
+          fi
+          echo "::notice::No security vulnerabilities found"
+
+      - name: Upload security report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.json
+
+  # ============================================================================
+  # PSALM - Static Analysis (Alternative)
+  # ============================================================================
+  psalm:
+    name: Psalm Static Analysis
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[psalm]')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: |
+          composer install --prefer-dist --no-progress
+          composer require --dev vimeo/psalm
+
+      - name: Run Psalm
+        run: vendor/bin/psalm --output-format=github --no-progress
+        continue-on-error: true
+
+  # ============================================================================
+  # CODE METRICS - PHPMetrics
+  # ============================================================================
+  metrics:
+    name: Code Metrics
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || contains(github.event.head_commit.message, '[metrics]')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: |
+          composer install --prefer-dist --no-progress
+          composer require --dev phpmetrics/phpmetrics
+
+      - name: Generate metrics
+        run: vendor/bin/phpmetrics --report-html=metrics src
+
+      - name: Upload metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-metrics
+          path: metrics/
+          retention-days: 30
+
+  # ============================================================================
+  # DEAD CODE DETECTION
+  # ============================================================================
+  dead-code:
+    name: Dead Code Detection
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Detect dead code (via PHPStan)
+        run: |
+          composer require --dev phpstan/phpstan-deprecation-rules
+          vendor/bin/phpstan analyse src --level=max
+        continue-on-error: true
+
+  # ============================================================================
+  # DEPENDENCY VALIDATION
+  # ============================================================================
+  dependencies:
+    name: Dependency Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-lock
+
+      - name: Check for outdated dependencies
+        run: composer outdated --direct --strict
+        continue-on-error: true
+
+      - name: Check platform requirements
+        run: composer check-platform-reqs
+
+  # ============================================================================
+  # FINAL REPORT - Quality Summary
+  # ============================================================================
+  quality-summary:
+    name: Quality Summary
+    runs-on: ubuntu-latest
+    needs: [php-cs-fixer, phpstan, phpmd, security, dependencies]
+    if: always()
+
+    steps:
+      - name: Check overall quality status
+        run: |
+          echo "## Quality Checks Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| PHP CS Fixer | ${{ needs.php-cs-fixer.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PHPStan | ${{ needs.phpstan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| PHPMD | ${{ needs.phpmd.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ needs.security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependencies | ${{ needs.dependencies.result }} |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.php-cs-fixer.result }}" != "success" ] || \
+             [ "${{ needs.phpstan.result }}" != "success" ] || \
+             [ "${{ needs.security.result }}" != "success" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Quality checks failed. Please review the logs above." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All quality checks passed!" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **Quality checks failed**\n\nPlease run `make qa` locally to fix issues before merging.'
+            })
