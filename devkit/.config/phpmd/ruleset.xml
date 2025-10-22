@@ -1,0 +1,273 @@
+<?xml version="1.0"?>
+<!--
+  KaririCode DevKit - PHP Mess Detector Configuration
+  
+  Professional code quality rules for detecting potential issues, code smells,
+  and maintainability problems.
+  
+  Location: devkit/.config/phpmd/ruleset.xml
+  
+  @see https://phpmd.org/rules/index.html
+  @see https://github.com/phpmd/phpmd
+-->
+<ruleset name="KaririCode PHP Mess Detector Rules"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+
+    <description>
+        Professional PHPMD ruleset for KaririCode Framework components.
+        Enforces clean code principles, SOLID design, and maintainability.
+    </description>
+
+    <!-- ========================================================================
+         CLEAN CODE RULES
+         Enforces clean code practices
+         ======================================================================== -->
+    <rule ref="rulesets/cleancode.xml">
+        <!-- Allow static methods (needed for factories and utilities) -->
+        <exclude name="StaticAccess"/>
+        <!-- Allow else expressions (sometimes more readable) -->
+        <exclude name="ElseExpression"/>
+    </rule>
+    
+    <!-- Allow static access for specific cases -->
+    <rule ref="rulesets/cleancode.xml/StaticAccess">
+        <properties>
+            <!-- Exceptions for commonly used static methods -->
+            <property name="exceptions" value="\Closure,\DateTime,\DateTimeImmutable,\Exception"/>
+        </properties>
+    </rule>
+
+    <!-- ========================================================================
+         CODE SIZE RULES
+         Controls complexity and size of code elements
+         ======================================================================== -->
+    <rule ref="rulesets/codesize.xml">
+        <exclude name="TooManyPublicMethods"/>
+        <exclude name="TooManyMethods"/>
+        <exclude name="ExcessiveClassLength"/>
+    </rule>
+    
+    <!-- Cyclomatic Complexity: Maximum 10 -->
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
+        <properties>
+            <property name="reportLevel" value="10"/>
+        </properties>
+    </rule>
+    
+    <!-- NPath Complexity: Maximum 200 -->
+    <rule ref="rulesets/codesize.xml/NPathComplexity">
+        <properties>
+            <property name="minimum" value="200"/>
+        </properties>
+    </rule>
+    
+    <!-- Excessive Method Length: Maximum 100 lines -->
+    <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
+        <properties>
+            <property name="minimum" value="100"/>
+            <property name="ignore-whitespace" value="true"/>
+        </properties>
+    </rule>
+    
+    <!-- Excessive Class Length: Maximum 1000 lines -->
+    <rule ref="rulesets/codesize.xml/ExcessiveClassLength">
+        <properties>
+            <property name="minimum" value="1000"/>
+            <property name="ignore-whitespace" value="true"/>
+        </properties>
+    </rule>
+    
+    <!-- Excessive Parameter List: Maximum 5 parameters -->
+    <rule ref="rulesets/codesize.xml/ExcessiveParameterList">
+        <properties>
+            <property name="minimum" value="5"/>
+        </properties>
+    </rule>
+    
+    <!-- Excessive Public Methods: Maximum 25 -->
+    <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
+        <properties>
+            <property name="maxmethods" value="25"/>
+        </properties>
+    </rule>
+    
+    <!-- Excessive Methods: Maximum 30 total -->
+    <rule ref="rulesets/codesize.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="30"/>
+        </properties>
+    </rule>
+    
+    <!-- Too Many Fields: Maximum 20 properties -->
+    <rule ref="rulesets/codesize.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" value="20"/>
+        </properties>
+    </rule>
+
+    <!-- Excessive Class Complexity: Maximum 50 WMC -->
+    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
+        <properties>
+            <property name="maximum" value="50"/>
+        </properties>
+    </rule>
+
+    <!-- ========================================================================
+         CONTROVERSIAL RULES
+         Potentially controversial rules (use with caution)
+         ======================================================================== -->
+    <rule ref="rulesets/controversial.xml">
+        <!-- Allow short variable names (will be configured separately) -->
+        <exclude name="CamelCaseVariableName"/>
+        <exclude name="CamelCasePropertyName"/>
+        <exclude name="CamelCaseParameterName"/>
+        <exclude name="CamelCaseMethodName"/>
+    </rule>
+    
+    <!-- ========================================================================
+         DESIGN RULES
+         Object-oriented design principles
+         ======================================================================== -->
+    <rule ref="rulesets/design.xml">
+        <exclude name="CouplingBetweenObjects"/>
+    </rule>
+    
+    <!-- Coupling Between Objects: Maximum 15 dependencies -->
+    <rule ref="rulesets/design.xml/CouplingBetweenObjects">
+        <properties>
+            <property name="maximum" value="15"/>
+        </properties>
+    </rule>
+
+    <!-- ========================================================================
+         NAMING RULES
+         Naming conventions and standards
+         ======================================================================== -->
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable"/>
+        <exclude name="LongVariable"/>
+        <exclude name="ShortMethodName"/>
+    </rule>
+    
+    <!-- Short Variable: Minimum 2 characters (allow $i, $j, etc.) -->
+    <rule ref="rulesets/naming.xml/ShortVariable">
+        <properties>
+            <property name="minimum" value="2"/>
+            <!-- Common short names that are acceptable -->
+            <property name="exceptions" value="i,j,k,id,db,to,cc,ip,os"/>
+        </properties>
+    </rule>
+    
+    <!-- Long Variable: Maximum 30 characters -->
+    <rule ref="rulesets/naming.xml/LongVariable">
+        <properties>
+            <property name="maximum" value="30"/>
+        </properties>
+    </rule>
+    
+    <!-- Short Method Name: Minimum 3 characters -->
+    <rule ref="rulesets/naming.xml/ShortMethodName">
+        <properties>
+            <property name="minimum" value="3"/>
+            <!-- Common short method names that are acceptable -->
+            <property name="exceptions" value="up,to,at,is,id,get,set,has,add"/>
+        </properties>
+    </rule>
+
+    <!-- ========================================================================
+         UNUSED CODE RULES
+         Detects unused code elements
+         ======================================================================== -->
+    <rule ref="rulesets/unusedcode.xml">
+        <!-- Allow unused parameters in interface implementations -->
+        <exclude name="UnusedFormalParameter"/>
+    </rule>
+    
+    <!-- Allow unused parameters but check closures -->
+    <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter">
+        <properties>
+            <property name="checkUnusedFormalParametersInClosures" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- ========================================================================
+         EXCLUDE PATTERNS
+         Files and directories to ignore
+         ======================================================================== -->
+    <!-- Test files -->
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/Tests/*</exclude-pattern>
+    
+    <!-- Vendor directory -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    
+    <!-- Cache and temporary files -->
+    <exclude-pattern>*/cache/*</exclude-pattern>
+    <exclude-pattern>*/storage/*</exclude-pattern>
+    <exclude-pattern>*/temp/*</exclude-pattern>
+    <exclude-pattern>*/tmp/*</exclude-pattern>
+    
+    <!-- Build and generated files -->
+    <exclude-pattern>*/build/*</exclude-pattern>
+    <exclude-pattern>*/coverage/*</exclude-pattern>
+    <exclude-pattern>*/docs/*</exclude-pattern>
+    
+    <!-- Database files -->
+    <exclude-pattern>*/migrations/*</exclude-pattern>
+    <exclude-pattern>*/database/factories/*</exclude-pattern>
+    <exclude-pattern>*/database/seeders/*</exclude-pattern>
+    
+    <!-- IDE and editor files -->
+    <exclude-pattern>*/_ide_helper*.php</exclude-pattern>
+    <exclude-pattern>*.blade.php</exclude-pattern>
+    
+    <!-- Configuration files -->
+    <exclude-pattern>*/config/*</exclude-pattern>
+    
+    <!-- Public assets -->
+    <exclude-pattern>*/public/*</exclude-pattern>
+
+    <!-- ========================================================================
+         USAGE INSTRUCTIONS
+         ========================================================================
+         
+         Run PHPMD:
+           make phpmd
+           
+         Run PHPMD with custom output:
+           docker-compose exec php vendor/bin/phpmd src text devkit/.config/phpmd/ruleset.xml
+           
+         Output formats:
+           - text: Human-readable text
+           - html: HTML report
+           - xml: XML format
+           - json: JSON format
+           
+         Customize thresholds:
+           Edit the <property> values above to adjust limits
+           
+         Add exclusions:
+           Add more <exclude-pattern> entries as needed
+           
+         Ignore specific violations:
+           Use @SuppressWarnings annotation in code:
+           
+           /**
+            * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+            */
+           public function complexMethod() {
+               // Complex logic here
+           }
+           
+         Multiple suppressions:
+           /**
+            * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+            * @SuppressWarnings(PHPMD.NPathComplexity)
+            */
+         
+         ======================================================================== -->
+
+</ruleset>

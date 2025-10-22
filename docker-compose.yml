@@ -1,0 +1,54 @@
+services:
+  php:
+    image: kariricode/php-api-stack:dev
+    container_name: ${APP_NAME:-kariricode-devkit}_php
+    working_dir: /var/www/html
+    env_file:
+      - .env
+    ports:
+      # Expose the application port to the host
+      - "${APP_PORT:-8089}:80"
+      # Expose the internal redis port to the host if REDIS_HOST_PORT is set
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./:/var/www/html
+      - ./devkit/.config/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
+      - ./devkit/.config/php/error-reporting.ini:/usr/local/etc/php/conf.d/error-reporting.ini:ro
+      - ./devkit/.config/php/opcache.ini:/usr/local/etc/php/conf.d/docker-php-ext-opcache.ini:ro
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      HEALTH_CHECK_INSTALL: ${HEALTH_CHECK_INSTALL:-true}
+      COMPOSER_MEMORY_LIMIT: ${COMPOSER_MEMORY_LIMIT:--1}
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
+      XDEBUG_CONFIG: client_host=${XDEBUG_CLIENT_HOST:-host.docker.internal}
+    networks:
+      - kariricode_network
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      memcached:
+        condition: service_healthy
+
+  memcached:
+    image: memcached:1.6-alpine
+    container_name: ${APP_NAME:-kariricode-devkit}_memcached
+    command: memcached -m ${MEMCACHED_MEMORY:-256}
+    env_file:
+      - .env
+    ports:
+      - "${MEMCACHED_PORT:-11211}:11211"
+    networks:
+      - kariricode_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "11211"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  kariricode_network:
+    driver: bridge
+    name: ${APP_NAME:-kariricode-devkit}_network

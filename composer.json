@@ -1,0 +1,65 @@
+{
+    "name": "kariricode/devkit",
+    "description": "Professional development environment for KaririCode Framework components",
+    "type": "project",
+    "keywords": [
+        "kariricode",
+        "devkit",
+        "development-environment",
+        "docker",
+        "php"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Walmir Silva",
+            "email": "walmir.silva@kariricode.org",
+            "homepage": "https://kariricode.org",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/KaririCode-Framework/kariricode-devkit",
+    "support": {
+        "issues": "https://github.com/KaririCode-Framework/kariricode-devkit/issues",
+        "source": "https://github.com/KaririCode-Framework/kariricode-devkit",
+        "docs": "https://kariricode.org/docs/devkit"
+    },
+    "require": {
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "12.4.1",
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpmd/phpmd": "^2.15",
+        "rector/rector": "2.2.3"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@php -r \"if (!file_exists('.env')) { copy('.env.example', '.env'); echo 'Created .env file from .env.example\\n'; }\""
+        ],
+        "test": "echo 'DevKit base - no tests. Use install.sh to create a component.'",
+        "check-ready": [
+            "@php -r \"echo '\\n🔍 Checking DevKit readiness...\\n\\n';\"",
+            "@php -r \"echo (version_compare(PHP_VERSION, '8.3.0') >= 0 ? '✓' : '✗') . ' PHP version: ' . PHP_VERSION . '\\n';\"",
+            "@php -r \"echo (extension_loaded('redis') ? '✓' : '⚠') . ' Redis extension\\n';\"",
+            "@php -r \"echo (extension_loaded('memcached') ? '✓' : '⚠') . ' Memcached extension\\n';\"",
+            "@php -r \"echo (extension_loaded('xdebug') ? '✓' : '⚠') . ' Xdebug extension\\n';\"",
+            "@php -r \"echo '\\n📦 DevKit is ready! Run ./install.sh to create a component.\\n\\n';\""
+        ]
+    },
+    "scripts-descriptions": {
+        "check-ready": "Verify DevKit environment is properly configured"
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
