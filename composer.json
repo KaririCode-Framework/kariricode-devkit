@@ -24,16 +24,26 @@
         "source": "https://github.com/KaririCode-Framework/kariricode-devkit",
         "docs": "https://kariricode.org/docs/devkit"
     },
+    "autoload": {
+        "psr-4": {
+            "KaririCode\\DevKit\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "KaririCode\\DevKit\\Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": "^8.3"
     },
     "require-dev": {
         "phpunit/phpunit": "12.4.1",
-        "friendsofphp/php-cs-fixer": "^3.64",
+        "friendsofphp/php-cs-fixer": "3.89.0",
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpmd/phpmd": "^2.15",
-        "rector/rector": "2.2.3"
+        "rector/rector": "2.2.4"
     },
     "scripts": {
         "post-install-cmd": [

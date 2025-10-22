@@ -107,7 +107,7 @@ outdated: ## Show outdated packages
 
 test: ## Run all tests
 	@echo "$(BLUE)🧪 Running tests...$(NC)"
-	@$(EXEC_PHP) vendor/bin/phpunit
+	@$(EXEC_PHP) vendor/bin/phpunit --no-coverage --testdox
 	@echo "$(GREEN)✓ Tests completed$(NC)"
 
 test-coverage: ## Run tests with coverage report (HTML)

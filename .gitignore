@@ -125,20 +125,6 @@ $RECYCLE.BIN/
 /public/
 
 # ============================================================================
-# COMPONENT DEVELOPMENT
-# ============================================================================
-# When developing specific components, these are component-specific
-# DevKit base doesn't have src/tests, but components created will
-/src/
-/tests/Unit/
-/tests/Integration/
-/tests/Fixtures/
-
-# Keep base test structure
-!/tests/
-!/tests/.gitkeep
-
-# ============================================================================
 # DOCUMENTATION BUILD
 # ============================================================================
 /docs/_build/
