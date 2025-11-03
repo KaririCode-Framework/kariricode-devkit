@@ -84,93 +84,93 @@ bench: ## Run benchmarks (unified target). See 'make bench-help'.
 	@$(BENCH_SCRIPT)
 
 bench-help: ## Show usage help for the unified bench command
-	@echo "$(BOLD)$(CYAN)Benchmark Command Help$(RESET)"
-	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
-	@echo "Single entrypoint: $(BOLD)make bench$(RESET)"
-	@echo ""
-	@echo "$(BOLD)Parameters:$(RESET)"
-	@echo "  $(CYAN)REF=auto|main|<tag>$(RESET)     Compare against a stored tag"
-	@echo "                   auto → try 'main' if available (default)"
-	@echo "                   main → compare against main reference"
-	@echo "                   <tag> → compare against any other tag"
-	@echo ""
-	@echo "  $(CYAN)STORE=1 TAG=<tag>$(RESET)     Store benchmarks with a given tag"
-	@echo "                   ex.: STORE=1 TAG=feature-x"
-	@echo ""
-	@echo "  $(CYAN)ENFORCE_MAIN=1$(RESET)      When TAG=main, ensures you are on branch 'main'"
-	@echo ""
-	@echo "  $(CYAN)REPORT=1$(RESET)            Save text output to $(BENCH_REPORT_DIR)/last.txt"
-	@echo ""
-	@echo "$(BOLD)Examples:$(RESET)"
-	@echo "  make bench                         # Run normal benchmarks"
-	@echo "  make bench REF=main                # Compare against 'main'"
-	@echo "  make bench REF=my-tag              # Compare against custom tag"
-	@echo "  make bench STORE=1 TAG=feat        # Store results under tag 'feat'"
-	@echo "  make bench STORE=1 TAG=main ENFORCE_MAIN=1 # Store results as 'main'"
-	@echo "  make bench REF=main REPORT=1       # Compare and save output to last.txt"
-	@echo ""
-	@echo "$(GREEN)✓ Tip: Run 'make bench-help' anytime to see this guide$(RESET)"
+	@echo -e "$(BOLD)$(CYAN)Benchmark Command Help$(RESET)"
+	@echo -e "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
+	@echo -e "Single entrypoint: $(BOLD)make bench$(RESET)"
+	@echo -e ""
+	@echo -e "$(BOLD)Parameters:$(RESET)"
+	@echo -e "  $(CYAN)REF=auto|main|<tag>$(RESET)     Compare against a stored tag"
+	@echo -e "                   auto → try 'main' if available (default)"
+	@echo -e "                   main → compare against main reference"
+	@echo -e "                   <tag> → compare against any other tag"
+	@echo -e ""
+	@echo -e "  $(CYAN)STORE=1 TAG=<tag>$(RESET)     Store benchmarks with a given tag"
+	@echo -e "                   ex.: STORE=1 TAG=feature-x"
+	@echo -e ""
+	@echo -e "  $(CYAN)ENFORCE_MAIN=1$(RESET)      When TAG=main, ensures you are on branch 'main'"
+	@echo -e ""
+	@echo -e "  $(CYAN)REPORT=1$(RESET)            Save text output to $(BENCH_REPORT_DIR)/last.txt"
+	@echo -e ""
+	@echo -e "$(BOLD)Examples:$(RESET)"
+	@echo -e "  make bench                         # Run normal benchmarks"
+	@echo -e "  make bench REF=main                # Compare against 'main'"
+	@echo -e "  make bench REF=my-tag              # Compare against custom tag"
+	@echo -e "  make bench STORE=1 TAG=feat        # Store results under tag 'feat'"
+	@echo -e "  make bench STORE=1 TAG=main ENFORCE_MAIN=1 # Store results as 'main'"
+	@echo -e "  make bench REF=main REPORT=1       # Compare and save output to last.txt"
+	@echo -e ""
+	@echo -e "$(GREEN)✓ Tip: Run 'make bench-help' anytime to see this guide$(RESET)"
 
 # ==============================================================================
 # DEVELOPMENT HELPERS
 # ==============================================================================
 git-hooks-setup: ## Setup git hooks for development workflow
-	@echo "$(BLUE)→ Setting up git hooks...$(RESET)"
+	@echo -e "$(BLUE)→ Setting up git hooks...$(RESET)"
 	@mkdir -p .git/hooks
 	@if [ -f .git/hooks/pre-commit ] && [ ! -f .git/hooks/pre-commit.bak ]; then \
-		echo "$(YELLOW)⚠ Existing pre-commit hook found. Backing up...$(RESET)"; \
+		echo -e "$(YELLOW)⚠ Existing pre-commit hook found. Backing up...$(RESET)"; \
 		mv .git/hooks/pre-commit .git/hooks/pre-commit.bak; \
 	fi
 	@echo '#!/bin/sh' > .git/hooks/pre-commit
 	@echo 'set -e' >> .git/hooks/pre-commit
 	@echo 'make pre-commit' >> .git/hooks/pre-commit
 	@chmod +x .git/hooks/pre-commit
-	@echo "$(GREEN)✓ Git hooks set up$(RESET)"
+	@echo -e "$(GREEN)✓ Git hooks set up$(RESET)"
 
 git-hooks-remove: ## Remove git hooks and restore backups if any
-	@echo "$(BLUE)→ Cleaning up git hooks...$(RESET)"
+	@echo -e "$(BLUE)→ Cleaning up git hooks...$(RESET)"
 	@if [ -f .git/hooks/pre-commit.bak ]; then \
-		echo "$(YELLOW)↩ Restoring backup pre-commit hook...$(RESET)"; \
+		echo -e "$(YELLOW)↩ Restoring backup pre-commit hook...$(RESET)"; \
 		mv .git/hooks/pre-commit.bak .git/hooks/pre-commit; \
 	elif [ -f .git/hooks/pre-commit ]; then \
-		echo "$(RED)✗ Removing generated pre-commit hook...$(RESET)"; \
+		echo -e "$(RED)✗ Removing generated pre-commit hook...$(RESET)"; \
 		rm .git/hooks/pre-commit; \
 	else \
-		echo "$(YELLOW)⚠ No pre-commit hook found$(RESET)"; \
+		echo -e "$(YELLOW)⚠ No pre-commit hook found$(RESET)"; \
 	fi
-	@echo "$(GREEN)✓ Git hooks cleaned$(RESET)"
+	@echo -e "$(GREEN)✓ Git hooks cleaned$(RESET)"
 
 git-hooks-check: ## Check if git hooks are installed correctly
-	@echo "$(BLUE)→ Verifying git hooks...$(RESET)"
+	@echo -e "$(BLUE)→ Verifying git hooks...$(RESET)"
 	@if [ -f .git/hooks/pre-commit ]; then \
 		if grep -q "make pre-commit" .git/hooks/pre-commit; then \
-			echo "$(GREEN)✓ pre-commit hook is installed correctly$(RESET)"; \
+			echo -e "$(GREEN)✓ pre-commit hook is installed correctly$(RESET)"; \
 		else \
-			echo "$(RED)✗ pre-commit hook exists but was not installed by this Makefile$(RESET)"; \
+			echo -e "$(RED)✗ pre-commit hook exists but was not installed by this Makefile$(RESET)"; \
 		fi \
 	else \
-		echo "$(RED)✗ pre-commit hook not found$(RESET)"; \
+		echo -e "$(RED)✗ pre-commit hook not found$(RESET)"; \
 	fi
 
 info: ## Show PHP and project information
-	@echo "$(BOLD)$(CYAN)Project Information$(RESET)"
-	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
-	@echo "PHP Version:        $(PHP_VERSION)"
-	@echo "PHP Binary:         $(PHP)"
-	@echo "Composer:           $(COMPOSER)"
-	@echo "Project Directory:  $(shell pwd)"
-	@echo "Source Directory:   $(SRC_DIR)"
-	@echo "Test Directory:     $(TEST_DIR)"
-	@echo ""
-	@echo "$(BOLD)$(CYAN)Installed Tools$(RESET)"
-	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
-	@test -f $(PHPUNIT) && echo "PHPUnit:            ✓" || echo "PHPUnit:            ✗"
-	@test -f $(PHPSTAN) && echo "PHPStan:            ✓" || echo "PHPStan:            ✗"
-	@test -f $(PSALM) && echo "Psalm:              ✓" || echo "Psalm:              ✗"
-	@test -f $(PHPCS) && echo "PHPCS:              ✓" || echo "PHPCS:              ✗"
-	@test -f $(PHP_CS_FIXER) && echo "PHP-CS-Fixer:       ✓" || echo "PHP-CS-Fixer:       ✗"
-	@test -f $(INFECTION) && echo "Infection:          ✓" || echo "Infection:          ✗"
-	@test -f $(PHPBENCH) && echo "PHPBench:           ✓" || echo "PHPBench:           ✗"
+	@echo -e "$(BOLD)$(CYAN)Project Information$(RESET)"
+	@echo -e "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
+	@echo -e "PHP Version:        $(PHP_VERSION)"
+	@echo -e "PHP Binary:         $(PHP)"
+	@echo -e "Composer:           $(COMPOSER)"
+	@echo -e "Project Directory:  $(shell pwd)"
+	@echo -e "Source Directory:   $(SRC_DIR)"
+	@echo -e "Test Directory:     $(TEST_DIR)"
+	@echo -e ""
+	@echo -e "$(BOLD)$(CYAN)Installed Tools$(RESET)"
+	@echo -e "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
+	@test -f $(PHPUNIT) && echo -e "PHPUnit:            ✓" || echo -e "PHPUnit:            ✗"
+	@test -f $(PHPSTAN) && echo -e "PHPStan:            ✓" || echo -e "PHPStan:            ✗"
+	@test -f $(PSALM) && echo -e "Psalm:              ✓" || echo -e "Psalm:              ✗"
+	@test -f $(PHPCS) && echo -e "PHPCS:              ✓" || echo -e "PHPCS:              ✗"
+	@test -f $(PHP_CS_FIXER) && echo -e "PHP-CS-Fixer:       ✓" || echo -e "PHP-CS-Fixer:       ✗"
+	@test -f $(INFECTION) && echo -e "Infection:          ✓" || echo -e "Infection:          ✗"
+	@test -f $(PHPBENCH) && echo -e "PHPBench:           ✓" || echo -e "PHPBench:           ✗"
 
 # ==============================================================================
 # RELEASE MANAGEMENT
@@ -178,44 +178,44 @@ info: ## Show PHP and project information
 
 tag: ## Create a new git tag (usage: make tag VERSION=1.0.0)
 	@if [ -z "$(VERSION)" ]; then \
-		echo "$(RED)✗ VERSION is required. Usage: make tag VERSION=1.0.0$(RESET)"; \
+		echo -e "$(RED)✗ VERSION is required. Usage: make tag VERSION=1.0.0$(RESET)"; \
 		exit 1; \
 	fi
-	@echo "$(BLUE)→ Creating tag v$(VERSION)...$(RESET)"
+	@echo -e "$(BLUE)→ Creating tag v$(VERSION)...$(RESET)"
 	@git tag -a "v$(VERSION)" -m "Release v$(VERSION)"
 	@git push origin "v$(VERSION)"
-	@echo "$(GREEN)✓ Tag v$(VERSION) created and pushed$(RESET)"
+	@echo -e "$(GREEN)✓ Tag v$(VERSION) created and pushed$(RESET)"
 
 release: cd ## Prepare release (run full CD pipeline)
-	@echo "$(BOLD)$(GREEN)✓ Release preparation complete$(RESET)"
+	@echo -e "$(BOLD)$(GREEN)✓ Release preparation complete$(RESET)"
 	@echo ""
-	@echo "$(CYAN)Next steps:$(RESET)"
-	@echo "  1. Update CHANGELOG.md"
-	@echo "  2. Update version in composer.json"
-	@echo "  3. Commit changes"
-	@echo "  4. Run: make tag VERSION=X.Y.Z"
-	@echo "  5. Push to GitHub"
-	@echo "  6. Create GitHub release"
+	@echo -e "$(CYAN)Next steps:$(RESET)"
+	@echo -e "  1. Update CHANGELOG.md"
+	@echo -e "  2. Update version in composer.json"
+	@echo -e "  3. Commit changes"
+	@echo -e "  4. Run: make tag VERSION=X.Y.Z"
+	@echo -e "  5. Push to GitHub"
+	@echo -e "  6. Create GitHub release"
 
 # ==============================================================================
 # STATS & METRICS
 # ==============================================================================
 
 stats: ## Show project statistics
-	@echo "$(BOLD)$(CYAN)Project Statistics$(RESET)"
-	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
-	@echo "Total PHP files:    $$(find $(SRC_DIR) -name '*.php' | wc -l)"
-	@echo "Total test files:   $$(find $(TEST_DIR) -name '*.php' | wc -l)"
-	@echo "Lines of code:      $$(find $(SRC_DIR) -name '*.php' -exec cat {} \; | wc -l)"
-	@echo "Lines of tests:     $$(find $(TEST_DIR) -name '*.php' -exec cat {} \; | wc -l)"
-	@echo ""
-	@echo "$(BOLD)$(CYAN)Directory Sizes$(RESET)"
-	@echo "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
+	@echo -e "$(BOLD)$(CYAN)Project Statistics$(RESET)"
+	@echo -e "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
+	@echo -e "Total PHP files:    $$(find $(SRC_DIR) -name '*.php' | wc -l)"
+	@echo -e "Total test files:   $$(find $(TEST_DIR) -name '*.php' | wc -l)"
+	@echo -e "Lines of code:      $$(find $(SRC_DIR) -name '*.php' -exec cat {} \; | wc -l)"
+	@echo -e "Lines of tests:     $$(find $(TEST_DIR) -name '*.php' -exec cat {} \; | wc -l)"
+	@echo -e ""
+	@echo -e "$(BOLD)$(CYAN)Directory Sizes$(RESET)"
+	@echo -e "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
 	@du -sh $(SRC_DIR) 2>/dev/null || true
 	@du -sh $(TEST_DIR) 2>/dev/null || true
 	@du -sh vendor 2>/dev/null || true
 
 loc: ## Count lines of code
-	@echo "$(BLUE)→ Counting lines of code...$(RESET)"
+	@echo -e "$(BLUE)→ Counting lines of code...$(RESET)"
 	@find $(SRC_DIR) -name '*.php' -exec wc -l {} \; | awk '{sum += $$1} END {print "Source: " sum " lines"}'
 	@find $(TEST_DIR) -name '*.php' -exec wc -l {} \; | awk '{sum += $$1} END {print "Tests:  " sum " lines"}'

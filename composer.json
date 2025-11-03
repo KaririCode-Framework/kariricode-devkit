@@ -45,20 +45,6 @@
         "phpmd/phpmd": "^2.15",
         "rector/rector": "2.2.4"
     },
-    "scripts": {
-        "post-install-cmd": [
-            "@php -r \"if (!file_exists('.env')) { copy('.env.example', '.env'); echo 'Created .env file from .env.example\\n'; }\""
-        ],
-        "test": "echo 'DevKit base - no tests. Use install.sh to create a component.'",
-        "check-ready": [
-            "@php -r \"echo '\\n🔍 Checking DevKit readiness...\\n\\n';\"",
-            "@php -r \"echo (version_compare(PHP_VERSION, '8.3.0') >= 0 ? '✓' : '✗') . ' PHP version: ' . PHP_VERSION . '\\n';\"",
-            "@php -r \"echo (extension_loaded('redis') ? '✓' : '⚠') . ' Redis extension\\n';\"",
-            "@php -r \"echo (extension_loaded('memcached') ? '✓' : '⚠') . ' Memcached extension\\n';\"",
-            "@php -r \"echo (extension_loaded('xdebug') ? '✓' : '⚠') . ' Xdebug extension\\n';\"",
-            "@php -r \"echo '\\n📦 DevKit is ready! Run ./install.sh to create a component.\\n\\n';\""
-        ]
-    },
     "scripts-descriptions": {
         "check-ready": "Verify DevKit environment is properly configured"
     },

@@ -61,8 +61,8 @@ endef
 
 help: ## Display this help message
 	@echo ""
-	@echo "$(BOLD)$(CYAN)KaririCode\\DevKit - Development Makefile$(RESET)"
-	@echo "$(BLUE)═══════════════════════════════════════════════════════$(RESET)"
+	@echo -e "$(BOLD)$(CYAN)KaririCode\\DevKit - Development Makefile$(RESET)"
+	@echo -e "$(BLUE)═══════════════════════════════════════════════════════$(RESET)"
 
 	@awk -v TITLE="🚀 Main Pipeline"           '$(AWK_HELP_SCRIPT)' $(MAKE_DIR)/pipeline/Makefile.orchestration.mk
 	@awk -v TITLE="🛠️  Setup & Maintenance"     '$(AWK_HELP_SCRIPT)' $(MAKE_DIR)/local/Makefile.setup.mk
@@ -72,14 +72,14 @@ help: ## Display this help message
 	@awk -v TITLE="🐳 Docker Compose"         '$(AWK_HELP_SCRIPT)' $(MAKE_DIR)/docker/Makefile.docker-compose.mk
 	@awk -v TITLE="🐳 Docker Core"            '$(AWK_HELP_SCRIPT)' $(MAKE_DIR)/docker/Makefile.docker-core.mk
 	@awk -v TITLE="🐳 Docker Tools"           '$(AWK_HELP_SCRIPT)' $(MAKE_DIR)/docker/Makefile.docker-tools.mk
-	@awk -v TITLE="🐳 Docker Image"           '$(AWK_HELP_SCRIPT)' $(MAKE_DIR)/docker/Makefile.docker-image.mk
+	@awk -v TITLE="🐳 Docker Image"           '$(AWK_HELP_SCRIPT)' $(MAKE_DIR)/docker/Makefile.docker-image.mk 
 
 	@echo ""
-	@echo "$(BOLD)Usage Examples:$(RESET)"
-	@echo "  make $(CYAN)install$(RESET)         # Install all dependencies"
-	@echo "  make $(CYAN)ci$(RESET)              # Run local CI pipeline"
-	@echo "  make $(CYAN)docker-ci$(RESET)       # Run CI in Docker (isolated)"
-	@echo "  make $(CYAN)docker-shell$(RESET)    # Open interactive Docker shell"
+	@echo -e "$(BOLD)Usage Examples:$(RESET)"
+	@echo -e "  $(YELLOW)make install$(RESET)         # Install all dependencies"
+	@echo -e "  $(YELLOW)make ci$(RESET)              # Run local CI pipeline"
+	@echo -e "  $(YELLOW)make docker-ci$(RESET)       # Run CI in Docker (isolated)"
+	@echo -e "  $(YELLOW)make docker-shell$(RESET)    # Open interactive Docker shell"
 	@echo ""
 
 debug-composer: ## Debug composer configuration
