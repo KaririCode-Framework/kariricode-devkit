@@ -1,0 +1,175 @@
+{
+  // ============================================================================
+  // KaririCode\Parser - VS Code Debug Configurations
+  // ============================================================================
+  // XDebug 3.x configurations for debugging PHP code and tests
+  // ============================================================================
+
+  "version": "0.2.0",
+  "configurations": [
+    // ===== XDEBUG - LISTEN FOR CONNECTIONS =====
+    {
+      "name": "Listen for XDebug",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "log": true,
+      "pathMappings": {
+        "/app": "${workspaceFolder}"
+      },
+      "xdebugSettings": {
+        "max_data": 65535,
+        "show_hidden": 1,
+        "max_children": 100,
+        "max_depth": 5
+      }
+    },
+
+    // ===== XDEBUG - LAUNCH CURRENT FILE =====
+    {
+      "name": "Launch Currently Open Script",
+      "type": "php",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${fileDirname}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"],
+      "env": {
+        "XDEBUG_MODE": "debug",
+        "XDEBUG_CONFIG": "client_port=9003"
+      }
+    },
+
+    // ===== PHPUNIT - DEBUG CURRENT TEST FILE =====
+    {
+      "name": "PHPUnit: Debug Current Test File",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/phpunit",
+      "args": ["${file}", "--colors=always", "--testdox"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"],
+      "env": {
+        "XDEBUG_MODE": "debug,coverage"
+      }
+    },
+
+    // ===== PHPUNIT - DEBUG SPECIFIC TEST METHOD =====
+    {
+      "name": "PHPUnit: Debug Current Test Method",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/phpunit",
+      "args": [
+        "${file}",
+        "--filter",
+        "${selectedText}",
+        "--colors=always",
+        "--testdox"
+      ],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"],
+      "env": {
+        "XDEBUG_MODE": "debug"
+      }
+    },
+
+    // ===== PHPUNIT - DEBUG ALL UNIT TESTS =====
+    {
+      "name": "PHPUnit: Debug All Unit Tests",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/phpunit",
+      "args": ["--testsuite=Unit", "--colors=always", "--testdox"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"],
+      "env": {
+        "XDEBUG_MODE": "debug"
+      }
+    },
+
+    // ===== PHPUNIT - DEBUG ALL INTEGRATION TESTS =====
+    {
+      "name": "PHPUnit: Debug Integration Tests",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/phpunit",
+      "args": ["--testsuite=Integration", "--colors=always", "--testdox"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"],
+      "env": {
+        "XDEBUG_MODE": "debug"
+      }
+    },
+
+    // ===== PHPUNIT - DEBUG ALL TESTS =====
+    {
+      "name": "PHPUnit: Debug All Tests",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/phpunit",
+      "args": ["--colors=always", "--testdox"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"],
+      "env": {
+        "XDEBUG_MODE": "debug"
+      }
+    },
+
+    // ===== PHPSTAN - DEBUG ANALYSIS =====
+    {
+      "name": "PHPStan: Debug Analysis",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/phpstan",
+      "args": ["analyse", "src", "--level=max", "--memory-limit=512M"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"]
+    },
+
+    // ===== PSALM - DEBUG ANALYSIS =====
+    {
+      "name": "Psalm: Debug Analysis",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/psalm",
+      "args": ["--show-info=true", "--stats"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"]
+    },
+
+    // ===== COMPOSER - DEBUG OPERATIONS =====
+    {
+      "name": "Composer: Debug Install",
+      "type": "php",
+      "request": "launch",
+      "program": "/usr/bin/composer",
+      "args": ["install", "--no-interaction", "-vvv"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"]
+    },
+
+    // ===== BENCHMARK - DEBUG PERFORMANCE =====
+    {
+      "name": "PHPBench: Debug Benchmarks",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/phpbench",
+      "args": ["run", "--report=default"],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "runtimeArgs": ["-dxdebug.mode=debug", "-dxdebug.start_with_request=yes"],
+      "env": {
+        "XDEBUG_MODE": "debug"
+      }
+    }
+  ]
+}

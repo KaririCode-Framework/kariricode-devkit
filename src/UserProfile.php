@@ -9,6 +9,7 @@ use Exception;
 use InvalidArgumentException;
 use JsonSerializable;
 use Random\Randomizer;
+use SensitiveParameter;
 use Stringable;
 
 // --------------------------------------------------------------
@@ -51,26 +52,24 @@ use Stringable;
 final readonly class UserProfile implements JsonSerializable, Stringable
 {
     public const string MODEL = 'UserProfile';
+
     public const int VERSION = 1;
 
     public function __construct(
         #[Length(min: 1, max: 50)]
         public string $id,
-
         #[Length(min: 2, max: 120)]
         public string $name,
-
         public Email $email,
         public UserRole $role = UserRole::VIEWER,
         public UserStatus $status = UserStatus::ACTIVE,
-
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         public ?string $twoFactorSecret = null,
-
         public ?array $meta = null,
         public ?DateTimeImmutable $createdAt = null,
         public ?DateTimeImmutable $updatedAt = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Creates a new UserProfile instance with a generated ID and current timestamps.
@@ -159,7 +158,7 @@ final readonly class UserProfile implements JsonSerializable, Stringable
             twoFactorSecret: $this->twoFactorSecret,
             meta: $this->meta,
             createdAt: $this->createdAt,
-            updatedAt: new DateTimeImmutable()
+            updatedAt: new DateTimeImmutable(),
         );
     }
 
@@ -174,11 +173,11 @@ final readonly class UserProfile implements JsonSerializable, Stringable
             twoFactorSecret: $this->twoFactorSecret,
             meta: $this->meta,
             createdAt: $this->createdAt,
-            updatedAt: new DateTimeImmutable()
+            updatedAt: new DateTimeImmutable(),
         );
     }
 
-    public function with2FA(#[\SensitiveParameter] string $secret): self
+    public function with2FA(#[SensitiveParameter] string $secret): self
     {
         return new self(
             id: $this->id,
@@ -189,7 +188,7 @@ final readonly class UserProfile implements JsonSerializable, Stringable
             twoFactorSecret: $secret,
             meta: $this->meta,
             createdAt: $this->createdAt,
-            updatedAt: new DateTimeImmutable()
+            updatedAt: new DateTimeImmutable(),
         );
     }
 
@@ -204,7 +203,7 @@ final readonly class UserProfile implements JsonSerializable, Stringable
             twoFactorSecret: $this->twoFactorSecret,
             meta: $meta,
             createdAt: $this->createdAt,
-            updatedAt: new DateTimeImmutable()
+            updatedAt: new DateTimeImmutable(),
         );
     }
 
@@ -224,7 +223,7 @@ final readonly class UserProfile implements JsonSerializable, Stringable
             'version' => self::VERSION,
             'id' => $this->id,
             'name' => $this->name,
-            'email' => (string)$this->email,
+            'email' => (string) $this->email,
             'role' => $this->role->value,
             'status' => $this->status->value,
             'has2FA' => $this->has2FA(),
@@ -249,6 +248,7 @@ final readonly class UserProfile implements JsonSerializable, Stringable
     private static function hydrateEmail(array $data): Email
     {
         $emailInput = $data['email'] ?? '';
+
         return $emailInput instanceof Email ? $emailInput : new Email($emailInput);
     }
 

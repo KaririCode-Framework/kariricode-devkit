@@ -1,0 +1,37 @@
+{
+  "$schema": "./vendor/phpbench/phpbench/phpbench.schema.json",
+  "runner.bootstrap": "vendor/autoload.php",
+  "runner.path": "benchmarks",
+  "runner.php_config": {
+    "memory_limit": "1G"
+  },
+  "runner.executors": {
+    "profiling": {
+      "executor": "local",
+      "php_config": {
+        "xdebug.mode": "profile",
+        "xdebug.output_dir": "build/profile"
+      }
+    }
+  },
+  "report.generators": {
+    "table": {
+      "cols": [
+        "benchmark",
+        "subject",
+        "revs",
+        "its",
+        "mem_peak",
+        "best",
+        "mean",
+        "mode",
+        "worst",
+        "stdev",
+        "rstdev",
+        "diff"
+      ]
+    }
+  },
+  "runner.iterations": 10,
+  "runner.revs": 1000
+}

@@ -1,0 +1,490 @@
+{
+  // ============================================================================
+  // KaririCode\Parser - VS Code Tasks (Makefile Integration)
+  // ============================================================================
+  // Integrates Makefile targets with VS Code task runner
+  // Access via: Ctrl+Shift+B or Terminal > Run Task
+  // ============================================================================
+
+  "version": "2.0.0",
+  "tasks": [
+    // ===== SETUP & INSTALLATION =====
+    {
+      "label": "Install Dependencies",
+      "type": "shell",
+      "command": "make install",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Update Dependencies",
+      "type": "shell",
+      "command": "make update",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== TESTING =====
+    {
+      "label": "Run All Tests",
+      "type": "shell",
+      "command": "make test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Unit Tests",
+      "type": "shell",
+      "command": "make test-unit",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Integration Tests",
+      "type": "shell",
+      "command": "make test-integration",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Coverage Report",
+      "type": "shell",
+      "command": "make coverage",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Coverage Report",
+      "type": "shell",
+      "command": "xdg-open coverage/html/index.html || open coverage/html/index.html",
+      "group": "test",
+      "presentation": {
+        "reveal": "never"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Mutation Tests",
+      "type": "shell",
+      "command": "make mutation",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== STATIC ANALYSIS =====
+    {
+      "label": "Run All Analysis",
+      "type": "shell",
+      "command": "make analyse",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": [
+        "$phpcs",
+        {
+          "owner": "phpstan",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^\\s*(.*):(\\d+)\\s*(.*)$",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          }
+        }
+      ]
+    },
+    {
+      "label": "Run PHPStan",
+      "type": "shell",
+      "command": "make phpstan",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Psalm",
+      "type": "shell",
+      "command": "make psalm",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Psalm Taint Analysis",
+      "type": "shell",
+      "command": "make psalm-taint",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== CODE STYLE =====
+    {
+      "label": "Check Coding Standards",
+      "type": "shell",
+      "command": "make cs-check",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": ["$phpcs"]
+    },
+    {
+      "label": "Fix Coding Standards",
+      "type": "shell",
+      "command": "make cs-fix",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Format Code (PHP-CS-Fixer)",
+      "type": "shell",
+      "command": "make format",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Format Code (Dry Run)",
+      "type": "shell",
+      "command": "make format-dry",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint PHP Files",
+      "type": "shell",
+      "command": "make lint",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== QUALITY CHECKS =====
+    {
+      "label": "Run All Quality Checks",
+      "type": "shell",
+      "command": "make check",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Validate Composer",
+      "type": "shell",
+      "command": "make validate",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Security Audit",
+      "type": "shell",
+      "command": "make security",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Check Outdated Dependencies",
+      "type": "shell",
+      "command": "make outdated",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== CI/CD =====
+    {
+      "label": "Run CI Pipeline",
+      "type": "shell",
+      "command": "make ci",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Full CI Pipeline",
+      "type": "shell",
+      "command": "make ci-full",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run CD Pipeline",
+      "type": "shell",
+      "command": "make cd",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== BENCHMARKING =====
+    {
+      "label": "Run Benchmarks",
+      "type": "shell",
+      "command": "make benchmark",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Compare Benchmarks",
+      "type": "shell",
+      "command": "make benchmark-compare",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== CLEANUP =====
+    {
+      "label": "Clean Build Artifacts",
+      "type": "shell",
+      "command": "make clean",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Deep Clean (including vendor)",
+      "type": "shell",
+      "command": "make clean-all",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== DOCKER TASKS =====
+    {
+      "label": "Docker: Pull Image",
+      "type": "shell",
+      "command": "make docker-pull",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: Run Tests",
+      "type": "shell",
+      "command": "make docker-test",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: Run CI",
+      "type": "shell",
+      "command": "make docker-ci",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Docker: Open Shell",
+      "type": "shell",
+      "command": "make docker-shell",
+      "group": "none",
+      "isBackground": false,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+
+    // ===== UTILITIES =====
+    {
+      "label": "Show Project Stats",
+      "type": "shell",
+      "command": "make stats",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Show Project Info",
+      "type": "shell",
+      "command": "make info",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Count Lines of Code",
+      "type": "shell",
+      "command": "make loc",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+
+    // ===== PRE-COMMIT =====
+    {
+      "label": "Run Pre-Commit Checks",
+      "type": "shell",
+      "command": "make pre-commit",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install Git Hooks",
+      "type": "shell",
+      "command": "make install-hooks",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

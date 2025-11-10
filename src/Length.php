@@ -25,5 +25,6 @@ class Length
     public function __construct(
         public readonly int $min = 0,
         public readonly int $max = PHP_INT_MAX,
-    ) {}
+    ) {
+    }
 }

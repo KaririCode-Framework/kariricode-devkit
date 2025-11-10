@@ -22,9 +22,9 @@ docker-test-integration: ## Run integration tests in Docker
 	$(call docker_exec_make,test-integration)
 
 docker-coverage: ## Generate coverage in Docker
-	@echo "$(BLUE)→ Generating coverage in Docker...$(RESET)"
+	@echo -e "$(BLUE)→ Generating coverage in Docker...$(RESET)"
 	@$(DOCKER_RUN) $(DOCKER_IMAGE) make coverage
-	@echo "$(GREEN)✓ Coverage report: $(COVERAGE_DIR)/html/index.html$(RESET)"
+	@echo -e "$(GREEN)✓ Coverage report: $(COVERAGE_DIR)/html/index.html$(RESET)"
 
 docker-analyse: ## Run static analysis in Docker
 	$(call docker_exec_make,analyse)
@@ -49,16 +49,16 @@ docker-lint: ## Lint PHP files in Docker
 # ==============================================================================
 
 docker-ci: ## Run CI pipeline in Docker
-	$(call pipeline_header,"Docker CI Pipeline (Isolated Environment)       ")
+	$(call pipeline_header,"Docker CI Pipeline Isolated Environment")
 	$(call docker_exec_make,ci)
-	@echo ""
-	@echo "$(BOLD)$(GREEN)✓ Docker CI pipeline completed$(RESET)"
+	@echo -e ""
+	@echo -e "$(BOLD)$(GREEN)✓ Docker CI pipeline completed$(RESET)"
 
 docker-ci-full: ## Run full CI pipeline in Docker
-	$(call pipeline_header,"Docker Full CI Pipeline (Isolated Environment)     ")
+	$(call pipeline_header,"Docker Full CI Pipeline Isolated Environment")
 	$(call docker_exec_make,ci-full)
-	@echo ""
-	@echo "$(BOLD)$(GREEN)✓ Docker full CI pipeline completed$(RESET)"
+	@echo -e ""
+	@echo -e "$(BOLD)$(GREEN)✓ Docker full CI pipeline completed$(RESET)"
 
 docker-bench: ## Run benchmarks in Docker
 	$(call docker_exec_make,bench)

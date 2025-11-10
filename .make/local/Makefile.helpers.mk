@@ -164,13 +164,13 @@ info: ## Show PHP and project information
 	@echo -e ""
 	@echo -e "$(BOLD)$(CYAN)Installed Tools$(RESET)"
 	@echo -e "$(BLUE)═══════════════════════════════════════════════════════════$(RESET)"
-	@test -f $(PHPUNIT) && echo -e "PHPUnit:            ✓" || echo -e "PHPUnit:            ✗"
-	@test -f $(PHPSTAN) && echo -e "PHPStan:            ✓" || echo -e "PHPStan:            ✗"
-	@test -f $(PSALM) && echo -e "Psalm:              ✓" || echo -e "Psalm:              ✗"
-	@test -f $(PHPCS) && echo -e "PHPCS:              ✓" || echo -e "PHPCS:              ✗"
-	@test -f $(PHP_CS_FIXER) && echo -e "PHP-CS-Fixer:       ✓" || echo -e "PHP-CS-Fixer:       ✗"
-	@test -f $(INFECTION) && echo -e "Infection:          ✓" || echo -e "Infection:          ✗"
-	@test -f $(PHPBENCH) && echo -e "PHPBench:           ✓" || echo -e "PHPBench:           ✗"
+	@test -f $(PHPUNIT) && echo "PHPUnit:            ✓" || echo "PHPUnit:            ✗"
+	@test -f $(PHPSTAN) && echo "PHPStan:            ✓" || echo "PHPStan:            ✗"
+	@test -f $(PSALM) && echo "Psalm:              ✓" || echo "Psalm:              ✗"
+	@test -f $(PHPCS) && echo "PHPCS:              ✓" || echo "PHPCS:              ✗"
+	@test -f $(PHP_CS_FIXER) && echo "PHP-CS-Fixer:       ✓" || echo "PHP-CS-Fixer:       ✗"
+	@test -f $(INFECTION) && echo "Infection:          ✓" || echo "Infection:          ✗"
+	@test -f $(PHPBENCH) && echo "PHPBench:           ✓" || echo "PHPBench:           ✗"
 
 # ==============================================================================
 # RELEASE MANAGEMENT
@@ -188,7 +188,7 @@ tag: ## Create a new git tag (usage: make tag VERSION=1.0.0)
 
 release: cd ## Prepare release (run full CD pipeline)
 	@echo -e "$(BOLD)$(GREEN)✓ Release preparation complete$(RESET)"
-	@echo ""
+	@echo -e ""
 	@echo -e "$(CYAN)Next steps:$(RESET)"
 	@echo -e "  1. Update CHANGELOG.md"
 	@echo -e "  2. Update version in composer.json"

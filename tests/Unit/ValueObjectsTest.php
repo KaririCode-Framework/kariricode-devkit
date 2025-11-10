@@ -39,7 +39,7 @@ class ValueObjectsTest extends TestCase
     {
         // Expect an InvalidArgumentException to be thrown for an invalid email format
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Invalid email: email-invalido");
+        $this->expectExceptionMessage('Invalid email: email-invalido');
 
         // Attempt to create an Email object with an invalid string, which should trigger the exception
         new Email('email-invalido');
@@ -67,7 +67,7 @@ class ValueObjectsTest extends TestCase
     {
         // Expect an InvalidArgumentException to be thrown for an empty user ID
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("User ID cannot be empty.");
+        $this->expectExceptionMessage('User ID cannot be empty.');
 
         new UserId(''); // Isto deve falhar
     }
