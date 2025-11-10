@@ -39,14 +39,19 @@ The Docker modules provide containerized execution for:
 - **Clean State**: No local configuration interference
 
 ### Module Architecture
-```
-Docker Modules (.make/docker/)
+```tree
+.
+├── .make/docker/
+│   ├── Makefile.docker-core.mk    # → Core: Shell, Composer, PHP execution
+│   ├── Makefile.docker-compose.mk # → Stack: Full stack management (up, down, logs)
+│   ├── Makefile.docker-qa.mk      # → QA: CI/CD pipeline in containers
+│   ├── Makefile.docker-image.mk   # → Image: Pull, info, clean
+│   └── Makefile.docker-tools.mk   # → Tools: htop, jq, vim, network diagnostics
 │
-├── Makefile.docker-core.mk       → Shell, Composer, PHP execution
-├── Makefile.docker-compose.mk    → Full stack management (see MAKEFILE-compose.md)
-├── Makefile.docker-qa.mk         → QA pipeline in containers
-├── Makefile.docker-image.mk      → Image management
-└── Makefile.docker-tools.mk      → Utility tools
+└── arfa-runtime-stack/docker/
+    ├── entrypoint.sh          # → Entrypoint: Container initialization script
+    ├── config-processor.sh    # → Config: Processes PHP/Swoole configs from env vars
+    └── health-check.sh        # → Health: Docker health check script
 ```
 
 ### Docker vs Local Execution
