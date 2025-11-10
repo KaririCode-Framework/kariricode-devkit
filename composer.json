@@ -35,25 +35,27 @@
         }
     },
     "require": {
-        "php": "^8.3"
+        "php": "^8.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "12.4.1",
-        "friendsofphp/php-cs-fixer": "3.89.0",
-        "phpstan/phpstan": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.89",
+        "infection/infection": "^0.31",
+        "phpbench/phpbench": "^1.3",
+        "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpmd/phpmd": "^2.15",
-        "rector/rector": "2.2.4"
-    },
-    "scripts-descriptions": {
-        "check-ready": "Verify DevKit environment is properly configured"
+        "phpunit/phpunit": "^12.4",
+        "squizlabs/php_codesniffer": "^4.0",
+        "symfony/var-dumper": "^7.3",
+        "vimeo/psalm": "^6.13"
     },
     "config": {
         "sort-packages": true,
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "allow-plugins": {
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "infection/extension-installer": true
         }
     },
     "minimum-stability": "dev",

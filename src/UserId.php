@@ -28,7 +28,7 @@ final readonly class UserId implements Stringable, JsonSerializable
         public string $value,
     ) {
         if (empty($value)) {
-            throw new InvalidArgumentException("User ID cannot be empty.");
+            throw new InvalidArgumentException('User ID cannot be empty.');
         }
     }
 

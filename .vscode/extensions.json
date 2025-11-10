@@ -1,0 +1,171 @@
+{
+  // ============================================================================
+  // KaririCode\Parser - Recommended VS Code Extensions
+  // ============================================================================
+  // Essential and recommended extensions for PHP 8.4+ development with
+  // KaririCode quality standards
+  //
+  // Last Updated: 2025-01-27
+  // Validated against: VS Code marketplace latest releases
+  // ============================================================================
+
+  "recommendations": [
+    // ===== ESSENTIAL EXTENSIONS =====
+    // These extensions are critical for KaririCode development workflow
+
+    // PHP Language Server - Primary IntelliSense
+    // Provides fast code completion, go to definition, workspace symbols
+    // Zero dependencies, highly performant
+    "bmewburn.vscode-intelephense-client",
+
+    // PHP-CS-Fixer Integration
+    // Auto-formats PHP code according to PSR-12 and custom rules
+    // CRITICAL: Preserves premium documentation comments (800-1200 lines)
+    "junstyle.php-cs-fixer",
+
+    // PHPStan Static Analysis
+    // Static analyzer at maximum strictness level (level: max)
+    // Detects bugs and type errors before runtime
+    "swordev.phpstan",
+
+    // Psalm Static Analysis
+    // Additional static analysis with different heuristics
+    // Complements PHPStan for comprehensive type checking
+    "getpsalm.psalm-vscode-plugin",
+
+    // PHP Sniffer & Beautifier
+    // Integrates phpcs (linting) + phpcbf (auto-fix)
+    // Best PHPCS extension validated by Drupal community (2025)
+    // Multi-root workspace support, works out-of-the-box
+    "ValeryanM.vscode-phpsab",
+
+    // PHPUnit Test Runner
+    // Runs tests directly from VS Code with Test Explorer integration
+    // Supports debugging individual tests
+    "recca0120.vscode-phpunit",
+
+    // PHP Debug
+    // XDebug 3.x integration for debugging and profiling
+    // Essential for development and troubleshooting
+    "xdebug.php-debug",
+
+    // EditorConfig Support
+    // Maintains consistent coding styles between editors
+    // Automatically applies .editorconfig rules
+    "editorconfig.editorconfig",
+
+    // ===== HIGHLY RECOMMENDED =====
+    // Strongly recommended for productivity and code quality
+
+    // Better Comments
+    // Enhances comment visibility with color coding
+    // Perfect for premium documentation with TODO, FIXME, NOTE tags
+    "aaron-bond.better-comments",
+
+    // Error Lens
+    // Displays errors and warnings inline
+    // Improves error visibility and debugging speed
+    "usernamehw.errorlens",
+
+    // Todo Tree
+    // Aggregates TODO, FIXME, BUG, OPTIMIZE comments
+    // Searchable tree view for task tracking
+    "gruntfuggly.todo-tree",
+
+    // GitLens
+    // Advanced Git integration and history visualization
+    // Blame annotations, commit search, powerful comparisons
+    "eamodio.gitlens",
+
+    // Git Graph
+    // Visual Git commit history graph
+    // Complements GitLens for repository visualization
+    "mhutchie.git-graph",
+
+    // PHP Namespace Resolver
+    // Auto-imports and resolves PHP namespaces
+    // Saves time on use statements
+    "mehedidracula.php-namespace-resolver",
+
+    // ===== OPTIONAL BUT USEFUL =====
+    // Enhance specific workflows when needed
+
+    // Docker Integration
+    // Manage containers, images, and compose files
+    // Essential if using Docker for development
+    "ms-azuretools.vscode-docker",
+
+    // YAML Support
+    // Syntax highlighting and validation for YAML files
+    // Used in phpstan.neon, docker-compose.yml, CI/CD configs
+    "redhat.vscode-yaml",
+
+    // XML Tools
+    // XML formatting, validation, and XPath evaluation
+    // Used in phpunit.xml, phpcs.xml, psalm.xml
+    "redhat.vscode-xml",
+
+    // Markdown All in One
+    // Enhanced Markdown editing with preview and shortcuts
+    // Useful for README.md and documentation files
+    "yzhang.markdown-all-in-one",
+
+    // REST Client
+    // Test HTTP requests directly from .http files
+    // Alternative to Postman for API testing
+    "humao.rest-client",
+
+    // Makefile Tools
+    // Syntax highlighting and IntelliSense for Makefiles
+    // KaririCode uses Makefile for automation
+    "ms-vscode.makefile-tools",
+
+    // DotENV Syntax
+    // Syntax highlighting for .env files
+    // Common in PHP projects for configuration
+    "mikestead.dotenv",
+
+    // PHP DocBlocker
+    // Assists with PHPDoc generation (optional)
+    // KaririCode primarily uses custom snippets, but can help
+    "neilbrayfield.php-docblocker"
+
+    // ===== AI CODING ASSISTANTS (OPTIONAL) =====
+    // Uncomment ONE of these if desired:
+    // "github.copilot",              // GitHub Copilot (paid, most popular)
+    // "codeium.codeium",             // Codeium (free alternative)
+    // "continue.continue"            // Continue (open-source, local LLMs)
+  ],
+
+  // ===== NOT RECOMMENDED =====
+  // Extensions that conflict with quality standards or are deprecated
+  "unwantedRecommendations": [
+    // ===== FORMATTING CONFLICTS =====
+    // These interfere with PHP-CS-Fixer configuration
+    "esbenp.prettier-vscode",
+    "hookyqr.beautify",
+
+    // ===== INTELLISENSE CONFLICTS =====
+    // These conflict with Intelephense or provide duplicate functionality
+    "vscode.php-language-features",
+    "zobo.php-intellisense",
+    "ikappas.composer",
+
+    // ===== DEPRECATED/ABANDONED =====
+    // These extensions are no longer maintained or have better alternatives
+    "coenraads.bracket-pair-colorizer-2",
+    "calebporzio.better-phpunit",
+    "phproberto.vscode-php-getters-setters",
+    "christian-kohler.path-intellisense",
+
+    // ===== PHPCS ALTERNATIVES (INFERIOR) =====
+    // Validated by Drupal.org (August 2025) as problematic
+    "ikappas.phpcs",
+    "shevaua.phpcs",
+    "obliviousharmony.vscode-php-codesniffer",
+
+    // ===== LOWER QUALITY TOOLS =====
+    "dotjoshjohnson.xml",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

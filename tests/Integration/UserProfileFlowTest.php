@@ -85,7 +85,7 @@ final class UserProfileFlowTest extends TestCase
         // updatedAt must be newer than createdAt
         $this->assertGreaterThan(
             new DateTimeImmutable($finalJson['createdAt']),
-            new DateTimeImmutable($finalJson['updatedAt'])
+            new DateTimeImmutable($finalJson['updatedAt']),
         );
     }
 }

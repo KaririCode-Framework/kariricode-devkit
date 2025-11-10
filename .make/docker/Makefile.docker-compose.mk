@@ -95,7 +95,7 @@ check-ports: clean-docker check-docker-ports ## Check for port conflicts (includ
 diagnose-ports: ## Detailed port conflict diagnosis
 	@echo -e "$(BOLD)$(CYAN)Port Conflict Diagnosis$(RESET)"
 	@echo -e "$(BLUE)╔════════════════════════════════════════════════════════╗$(RESET)"
-	@echo ""
+	@echo -e ""
 	@bash -c ' \
 	if [ -f .env ]; then \
 		source .env 2>/dev/null || true; \
@@ -138,7 +138,7 @@ diagnose-ports: ## Detailed port conflict diagnosis
 fix-ports: ## Automatically fix port conflicts (interactive)
 	@echo -e "$(YELLOW)⚠  This will attempt to free up conflicting ports$(RESET)"
 	@echo -e "$(YELLOW)   Docker containers and processes will be terminated$(RESET)"
-	@echo ""
+	@echo -e ""
 	@bash -c ' \
 	read -p "Continue? [y/N] " -n 1 -r; \
 	echo; \
@@ -175,7 +175,7 @@ _do_fix_ports:
 		fi; \
 	done \
 	'
-	@echo ""
+	@echo -e ""
 	@$(MAKE) --no-print-directory check-ports
 
 kill-port: ## Kill process using specific port (usage: make kill-port PORT=11211)
@@ -209,7 +209,7 @@ kill-port: ## Kill process using specific port (usage: make kill-port PORT=11211
 port-scan: ## Scan common ports for conflicts
 	@echo -e "$(BOLD)$(CYAN)Port Scanner$(RESET)"
 	@echo -e "$(BLUE)╔════════════════════════════════════════════════════════╗$(RESET)"
-	@echo ""
+	@echo -e ""
 	@for port in 80 443 3000 3306 5432 6379 8000 8080 8089 9000 11211 27017; do \
 		if lsof -Pi :$$port -sTCP:LISTEN -t >/dev/null 2>&1; then \
 			PROCESS=$$(lsof -Pi :$$port -sTCP:LISTEN -t | head -1); \
@@ -219,7 +219,7 @@ port-scan: ## Scan common ports for conflicts
 			echo -e "$(GREEN)✓ Port $$port: Available$(RESET)"; \
 		fi; \
 	done
-	@echo ""
+	@echo -e ""
 	@echo -e "$(BLUE)╚════════════════════════════════════════════════════════╝$(RESET)"
 
 # ==============================================================================
@@ -232,7 +232,7 @@ up: ## Start Docker Compose services
 	@echo -e "$(BLUE)→ Starting Docker Compose services...$(RESET)"
 	@if [ ! -f .env ]; then \
 		echo -e "$(YELLOW)⚠  .env not found, copying from .env.example...$(RESET)"; \
-		cp .env.example .env 2>/dev/null || echo -e "$(RED)✗ .env.example not found$(RESET)"; \
+		cp .env.example .env 2>/dev/null || echo "$(RED)✗ .env.example not found$(RESET)"; \
 	fi
 	@docker compose --profile development up -d || { \
 		echo ""; \
@@ -414,7 +414,7 @@ inspect-php: ## Inspect PHP container
 	@echo -e "$(BOLD)$(CYAN)PHP Container Inspection$(RESET)"
 	@echo -e "$(BLUE)╔════════════════════════════════════════════════════════╗$(RESET)"
 	@docker compose exec php php -v
-	@echo ""
+	@echo -e ""
 	@docker compose exec php php -m
 	@echo -e "$(BLUE)╚════════════════════════════════════════════════════════╝$(RESET)"
 

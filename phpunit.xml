@@ -1,56 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.4/phpunit.xsd"
-    bootstrap="vendor/autoload.php"
-    cacheDirectory=".phpunit.cache"
-    colors="true"
-    executionOrder="random"
-    beStrictAboutTestsThatDoNotTestAnything="true"
-    beStrictAboutOutputDuringTests="true"
-    failOnWarning="true"
-    failOnRisky="true"
-    failOnIncomplete="true"
-    failOnSkipped="false"
->
-
+    bootstrap="vendor/autoload.php" colors="true" beStrictAboutOutputDuringTests="true"
+    failOnRisky="true" failOnWarning="true" cacheDirectory=".phpunit.cache"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+    displayDetailsOnTestsThatTriggerErrors="true" displayDetailsOnTestsThatTriggerNotices="true"
+    displayDetailsOnTestsThatTriggerWarnings="true">
     <testsuites>
-        <testsuite name="Unit Tests">
-            <directory suffix="Test.php">tests/Unit</directory>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
         </testsuite>
-        <testsuite name="Integration Tests">
-            <directory suffix="Test.php">tests/Integration</directory>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Functional">
+            <directory>tests/Functional</directory>
         </testsuite>
     </testsuites>
-
-    <!-- Code Coverage (ativa se houver driver disponível) -->
-    <coverage>
+    <source restrictNotices="true" restrictWarnings="true" ignoreIndirectDeprecations="true">
         <include>
-            <directory suffix=".php">src</directory>
+            <directory>src</directory>
         </include>
-        <exclude>
-            <directory>vendor</directory>
-            <directory>devkit</directory>
-            <directory>tests</directory>
-        </exclude>
+    </source>
+    <coverage includeUncoveredFiles="true" pathCoverage="false" ignoreDeprecatedCodeUnits="true"
+        disableCodeCoverageIgnore="true">
         <report>
-            <clover outputFile="build/coverage/clover.xml"/>
-            <html outputDirectory="build/coverage/html"/>
-            <text outputFile="php://stdout" showUncoveredFiles="false"/>
+            <html outputDirectory="coverage/html" />
+            <clover outputFile="coverage/clover.xml" />
+            <text outputFile="coverage/coverage.txt" />
         </report>
     </coverage>
-
     <logging>
-        <junit outputFile="build/junit.xml"/>
-        <testdoxText outputFile="build/testdox.txt"/>
+        <junit outputFile="reports/junit.xml" />
+        <testdoxHtml outputFile="reports/testdox.html" />
+        <testdoxText outputFile="reports/testdox.txt" />
     </logging>
-
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="XDEBUG_MODE" value="coverage"/>
-        <ini name="zend.assertions" value="1"/>
-        <ini name="assert.exception" value="1"/>
-        <ini name="memory_limit" value="512M"/>
+        <env name="APP_ENV" value="testing" />
+        <ini name="error_reporting" value="-1" />
+        <ini name="display_errors" value="1" />
+        <ini name="display_startup_errors" value="1" />
+        <ini name="memory_limit" value="1G" />
     </php>
-
 </phpunit>

@@ -28,7 +28,7 @@ endef
 # --- Verificação de Arquivo ---
 define check_file
 	@test -f $(1) || (echo "$(RED)✗ $(2) not found$(RESET)" && exit 1)
-endef 
+endef
 
 # --- Criação de Diretório ---
 define ensure_dir
@@ -40,7 +40,7 @@ define pipeline_header
 	@echo -e "$(BOLD)$(CYAN)╔════════════════════════════════════════════════════════╗$(RESET)"
 	@echo -e "$(BOLD)$(CYAN)║  $(1)$(RESET)"
 	@echo -e "$(BOLD)$(CYAN)╚════════════════════════════════════════════════════════╝$(RESET)"
-	@echo ""
+	@echo -e ""
 endef
 
 # --- Verificação de Branch Git ---

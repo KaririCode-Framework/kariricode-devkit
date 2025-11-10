@@ -29,7 +29,7 @@ class UserProfileTest extends TestCase
         $user = UserProfile::new(
             name: 'Utilizador Teste',
             email: 'teste@exemplo.com',
-            role: UserRole::EDITOR
+            role: UserRole::EDITOR,
         );
 
         $this->assertInstanceOf(UserProfile::class, $user);
@@ -72,7 +72,7 @@ class UserProfileTest extends TestCase
         $this->assertSame(['key' => 'value'], $user->meta);
         $this->assertSame(
             $expectedCreated->format('Y-m-d\TH:i:sP'),
-            $user->createdAt?->format('Y-m-d\TH:i:sP')
+            $user->createdAt?->format('Y-m-d\TH:i:sP'),
         );
 
         $this->assertNull($user->updatedAt);
@@ -221,7 +221,7 @@ class UserProfileTest extends TestCase
         $this->assertSame("UserProfile#{$id}<VIEWER>", (string) $user);
 
         // Teste displayLabel
-        $this->assertSame("Serializar (viewer)", $user->displayLabel());
+        $this->assertSame('Serializar (viewer)', $user->displayLabel());
 
         // Teste jsonSerialize
         $json = $user->jsonSerialize();
