@@ -1,0 +1,423 @@
+# ==============================================================================
+# KaririCode DevKit - Professional Docker Compose Configuration
+# ==============================================================================
+# Production-grade development environment following Docker best practices
+#
+# Features:
+# - Resource limits and reservations
+# - Health checks with proper timeouts
+# - Security hardening (read-only mounts, tmpfs, capabilities)
+# - Structured logging
+# - Multi-environment profiles
+# - Named volumes for performance
+# - Proper dependency management
+#
+# Usage:
+#   Development:  make up-safe
+#   Production:   docker compose --profile production up
+#   Testing:      docker compose --profile testing up
+#
+# Documentation: https://docs.docker.com/compose/compose-file/
+# ==============================================================================
+
+# Modern Compose syntax (no version needed for Compose v2+)
+# Ref: https://docs.docker.com/compose/compose-file/04-version-and-name/
+name: ${APP_NAME:-kariricode-devkit}
+
+services:
+  # ============================================================================
+  # PHP-FPM + Nginx + Redis Service (kariricode/php-api-stack)
+  # ============================================================================
+  php:
+    image: kariricode/php-api-stack:${PHP_STACK_VERSION:-dev}
+    container_name: ${APP_NAME:-kariricode-devkit}_php
+    hostname: php-app
+
+    # Restart policy for production stability
+    restart: unless-stopped
+
+    # Working directory
+    working_dir: /var/www/html
+
+    # User and group for running the application (security best practice)
+    # NOTE: Commented out - image runs as root internally but processes run as www-data
+    # user: "${UID:-1000}:${GID:-1000}"
+
+    # Resource limits (prevent runaway processes)
+    deploy:
+      resources:
+        limits:
+          cpus: "${PHP_CPU_LIMIT:-2.0}"
+          memory: ${PHP_MEMORY_LIMIT:-2G}
+        reservations:
+          cpus: "${PHP_CPU_RESERVATION:-0.5}"
+          memory: ${PHP_MEMORY_RESERVATION:-512M}
+
+    # Port mappings
+    ports:
+      - target: 80
+        published: ${APP_PORT:-8089}
+        protocol: tcp
+        mode: host
+      - target: 6379
+        published: ${REDIS_PORT:-6379}
+        protocol: tcp
+        mode: host
+
+    env_file:
+      - .env
+    # Volume mounts
+    volumes:
+      # Application code (delegated for macOS performance)
+      - type: bind
+        source: ./
+        target: /var/www/html
+        consistency: ${VOLUME_CONSISTENCY:-cached}
+
+      # Named volumes for cache (performance optimization)
+      - composer-cache:/root/.composer/cache
+      - phpstan-cache:/var/www/html/var/cache/phpstan
+      - php-session:/var/lib/php/sessions
+
+      # Temporary filesystem for uploads (security + performance)
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: ${TMPFS_SIZE:-100M}
+          mode: 1777
+
+    # # Environment variables
+    # environment:
+    #   # Application
+    #   APP_ENV: ${APP_ENV:-development}
+    #   APP_DEBUG: ${APP_DEBUG:-true}
+    #   APP_SECRET: ${APP_SECRET:-change-me-in-production}
+    #   APP_VERSION: ${APP_VERSION:-dev}
+    #   SYMFONY_ENV: ${SYMFONY_ENV:-dev}
+
+    #   # Session Handler (CRITICAL)
+    #   SESSION_SAVE_HANDLER: ${SESSION_SAVE_HANDLER:-files}
+    #   SESSION_SAVE_PATH: ${SESSION_SAVE_PATH:-/tmp}
+
+    #   # Redis Configuration (Internal - inside container)
+    #   REDIS_HOST: ${REDIS_HOST:-127.0.0.1}
+    #   REDIS_PORT: ${REDIS_PORT_INTERNAL:-6379}
+    #   REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    #   REDIS_DB: ${REDIS_DB:-0}
+    #   REDIS_TIMEOUT: ${REDIS_TIMEOUT:-5}
+
+    #   # Redis Server Configuration
+    #   REDIS_LOGFILE: ${REDIS_LOGFILE:-/var/log/redis/redis.log}
+    #   REDIS_LOGLEVEL: ${REDIS_LOGLEVEL:-notice}
+    #   REDIS_MAXMEMORY: ${REDIS_MAXMEMORY:-256mb}
+    #   REDIS_MAXMEMORY_POLICY: ${REDIS_MAXMEMORY_POLICY:-allkeys-lru}
+    #   REDIS_SAVE: ${REDIS_SAVE:-}
+    #   REDIS_APPENDONLY: ${REDIS_APPENDONLY:-no}
+    #   REDIS_LOG_FILE: ${REDIS_LOG_FILE:-/var/log/redis/redis.log}
+
+    #   # Memcached Configuration (External service)
+    #   MEMCACHED_HOST: memcached
+    #   MEMCACHED_PORT: 11211
+
+    #   # PHP Configuration
+    #   PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-2G}
+    #   PHP_MAX_EXECUTION_TIME: ${PHP_MAX_EXECUTION_TIME:-300}
+    #   PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE:-50M}
+    #   PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE:-50M}
+
+    #   # PHP-FPM Configuration
+    #   PHP_FPM_PM: ${PHP_FPM_PM:-dynamic}
+    #   PHP_FPM_PM_MAX_CHILDREN: ${PHP_FPM_PM_MAX_CHILDREN:-50}
+    #   PHP_FPM_PM_START_SERVERS: ${PHP_FPM_PM_START_SERVERS:-5}
+    #   PHP_FPM_PM_MIN_SPARE_SERVERS: ${PHP_FPM_PM_MIN_SPARE_SERVERS:-5}
+    #   PHP_FPM_PM_MAX_SPARE_SERVERS: ${PHP_FPM_PM_MAX_SPARE_SERVERS:-10}
+    #   PHP_FPM_PM_MAX_REQUESTS: ${PHP_FPM_PM_MAX_REQUESTS:-500}
+
+    #   # Nginx Configuration
+    #   NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-auto}
+    #   NGINX_WORKER_CONNECTIONS: ${NGINX_WORKER_CONNECTIONS:-1024}
+    #   NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE:-100M}
+    #   NGINX_KEEPALIVE_TIMEOUT: ${NGINX_KEEPALIVE_TIMEOUT:-65}
+
+    #   # Composer
+    #   COMPOSER_MEMORY_LIMIT: ${COMPOSER_MEMORY_LIMIT:--1}
+    #   COMPOSER_HOME: ${COMPOSER_HOME:-/root/.composer}
+
+    #   # Xdebug
+    #   XDEBUG_MODE: ${XDEBUG_MODE:-off}
+    #   XDEBUG_CLIENT_HOST: ${XDEBUG_CLIENT_HOST:-host.docker.internal}
+    #   XDEBUG_CLIENT_PORT: ${XDEBUG_CLIENT_PORT:-9003}
+    #   XDEBUG_SESSION: ${XDEBUG_SESSION:-PHPSTORM}
+
+    #   # OPcache
+    #   OPCACHE_ENABLE: ${OPCACHE_ENABLE:-1}
+    #   OPCACHE_VALIDATE_TIMESTAMPS: ${OPCACHE_VALIDATE_TIMESTAMPS:-1}
+    #   OPCACHE_REVALIDATE_FREQ: ${OPCACHE_REVALIDATE_FREQ:-2}
+
+    #   # Features
+    #   DEMO_MODE: ${DEMO_MODE:-false}
+    #   HEALTH_CHECK_INSTALL: ${HEALTH_CHECK_INSTALL:-true}
+
+    #   # Timezone
+    #   TZ: ${TZ:-UTC}
+
+    #   # Logging
+    #   LOG_LEVEL: ${LOG_LEVEL:-info}
+
+    # Network configuration
+    networks:
+      kariricode_network:
+        aliases:
+          - php-service
+          - api-server
+
+    # DNS configuration
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+    # Extra hosts for host machine communication
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: ${HEALTHCHECK_INTERVAL:-30s}
+      timeout: ${HEALTHCHECK_TIMEOUT:-10s}
+      retries: ${HEALTHCHECK_RETRIES:-3}
+      start_period: ${HEALTHCHECK_START_PERIOD:-40s}
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "${LOG_MAX_SIZE:-10m}"
+        max-file: "${LOG_MAX_FILE:-3}"
+        compress: "true"
+        labels: "service,environment"
+
+    # Labels for organization and monitoring
+    labels:
+      com.kariricode.service: "php-api"
+      com.kariricode.environment: "${APP_ENV:-development}"
+      com.kariricode.version: "${APP_VERSION:-dev}"
+      com.kariricode.description: "PHP-FPM + Nginx + Redis service (kariricode/php-api-stack)"
+      com.kariricode.maintainer: "devops@kariricode.org"
+
+    # Dependencies with health check conditions
+    depends_on:
+      memcached:
+        condition: service_healthy
+        restart: true
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Capability management (drop all, add only needed)
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+      - DAC_OVERRIDE
+
+    # Profiles for different environments
+    profiles:
+      - development
+      - production
+      - testing
+
+  # ============================================================================
+  # Memcached Service
+  # ============================================================================
+  memcached:
+    image: memcached:${MEMCACHED_VERSION:-1.6-alpine}
+    container_name: ${APP_NAME:-kariricode-devkit}_memcached
+    hostname: memcached-cache
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Command with tuned parameters
+    command: >
+      memcached
+      -m ${MEMCACHED_MEMORY:-256}
+      -c ${MEMCACHED_MAX_CONNECTIONS:-1024}
+      -t ${MEMCACHED_THREADS:-4}
+      -I ${MEMCACHED_MAX_ITEM_SIZE:-5m}
+      -v
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "${MEMCACHED_CPU_LIMIT:-1.0}"
+          memory: ${MEMCACHED_MEMORY_TOTAL:-512M}
+        reservations:
+          cpus: "${MEMCACHED_CPU_RESERVATION:-0.25}"
+          memory: ${MEMCACHED_MEMORY_RESERVATION:-256M}
+
+    # Port mapping
+    ports:
+      - target: 11211
+        published: ${MEMCACHED_PORT:-11211}
+        protocol: tcp
+        mode: host
+
+    # Network
+    networks:
+      kariricode_network:
+        aliases:
+          - cache-service
+
+    # Health check with proper validation
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "11211"]
+      interval: ${MEMCACHED_HEALTHCHECK_INTERVAL:-10s}
+      timeout: ${MEMCACHED_HEALTHCHECK_TIMEOUT:-5s}
+      retries: ${MEMCACHED_HEALTHCHECK_RETRIES:-3}
+      start_period: ${MEMCACHED_HEALTHCHECK_START_PERIOD:-10s}
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "${LOG_MAX_SIZE:-10m}"
+        max-file: "${LOG_MAX_FILE:-3}"
+        compress: "true"
+
+    # Labels
+    labels:
+      com.kariricode.service: "memcached"
+      com.kariricode.environment: "${APP_ENV:-development}"
+      com.kariricode.description: "Memcached caching service"
+      com.kariricode.maintainer: "devops@kariricode.org"
+
+    # Security
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+
+    # User (non-root)
+    user: "memcache"
+
+    # Read-only root filesystem (security hardening)
+    read_only: true
+    tmpfs:
+      - /tmp:size=50M,mode=1777
+
+    # Profiles
+    profiles:
+      - development
+      - production
+      - testing
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+networks:
+  kariricode_network:
+    driver: bridge
+    name: ${APP_NAME:-kariricode-devkit}_network
+
+    # Enable IPv6 if needed
+    enable_ipv6: ${ENABLE_IPV6:-false}
+
+    # Network configuration
+    driver_opts:
+      com.docker.network.bridge.name: ${BRIDGE_NAME:-kariricode0}
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.driver.mtu: ${NETWORK_MTU:-1500}
+
+    # IPAM configuration
+    ipam:
+      driver: default
+      config:
+        - subnet: ${NETWORK_SUBNET:-172.20.0.0/16}
+          gateway: ${NETWORK_GATEWAY:-172.20.0.1}
+
+    # Labels
+    labels:
+      com.kariricode.network: "main"
+      com.kariricode.environment: "${APP_ENV:-development}"
+
+# ==============================================================================
+# Volumes
+# ==============================================================================
+volumes:
+  # Composer cache for faster dependency installation
+  composer-cache:
+    name: ${APP_NAME:-kariricode-devkit}_composer_cache
+    driver: local
+    labels:
+      com.kariricode.volume: "composer-cache"
+      com.kariricode.description: "Composer dependencies cache"
+
+  # PHPStan cache for faster static analysis
+  phpstan-cache:
+    name: ${APP_NAME:-kariricode-devkit}_phpstan_cache
+    driver: local
+    labels:
+      com.kariricode.volume: "phpstan-cache"
+      com.kariricode.description: "PHPStan analysis cache"
+
+  # PHP session storage
+  php-session:
+    name: ${APP_NAME:-kariricode-devkit}_php_session
+    driver: local
+    labels:
+      com.kariricode.volume: "php-session"
+      com.kariricode.description: "PHP session data"
+
+# ==============================================================================
+# Extension Fields (DRY - reusable configurations)
+# ==============================================================================
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+    compress: "true"
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+x-security-defaults: &security-defaults
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+# ==============================================================================
+# Profiles Documentation
+# ==============================================================================
+#
+# Available profiles:
+#   - development: Full dev stack with Xdebug and verbose logging
+#   - production:  Optimized for production with minimal logging
+#   - testing:     Isolated testing environment
+#
+# Usage examples:
+#   make up-safe                                    # Development (recommended)
+#   docker compose --profile development up
+#   docker compose --profile production up -d
+#   docker compose --profile testing run php vendor/bin/phpunit
+#
+# Troubleshooting:
+#   make diagnose-ports                             # Check port conflicts
+#   make status                                     # Service status
+#   make logs SERVICE=php                           # View logs
+#   make shell                                      # Enter PHP container
+#
+# ==============================================================================
