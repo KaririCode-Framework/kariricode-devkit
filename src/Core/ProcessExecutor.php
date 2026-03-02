@@ -83,22 +83,22 @@ final readonly class ProcessExecutor
      */
     public function resolveBinary(string $vendorBin): ?string
     {
-        // Tier 1: PHAR-internal binary
-        if ('' !== \Phar::running(false)) {
-            $pharBin = \Phar::running(true) . '/' . $vendorBin;
-            if (file_exists($pharBin)) {
-                return $pharBin;
-            }
+        $basename = basename($vendorBin);
+
+        // Tier 1: .kcode/vendor/bin/ — tools installed by `kcode init`
+        // This is the primary resolution path for the kcode toolchain.
+        $kcodeBin = $this->workingDirectory . '/.kcode/vendor/bin/' . $basename;
+        if (is_file($kcodeBin) && is_executable($kcodeBin)) {
+            return $kcodeBin;
         }
 
-        // Tier 2: Project-local vendor binary
+        // Tier 2: Project-local vendor binary (e.g. package has devkit as require-dev)
         $localBin = $this->workingDirectory . '/' . $vendorBin;
         if (is_file($localBin) && is_executable($localBin)) {
             return $localBin;
         }
 
         // Tier 3: Global PATH
-        $basename = basename($vendorBin);
         /** @psalm-suppress ForbiddenCode — shell_exec is intentional for binary resolution; input is escaped */
         $globalBin = trim((string) shell_exec('command -v ' . escapeshellarg($basename) . ' 2>/dev/null'));
         if ('' !== $globalBin && is_executable($globalBin)) {
@@ -107,4 +107,5 @@ final readonly class ProcessExecutor
 
         return null;
     }
+
 }
