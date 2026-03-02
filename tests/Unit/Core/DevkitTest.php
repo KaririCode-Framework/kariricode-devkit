@@ -7,6 +7,7 @@ namespace KaririCode\Devkit\Tests\Unit\Core;
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Contract\ToolRunner;
 use KaririCode\Devkit\Core\Devkit;
+use KaririCode\Devkit\Core\DevkitConfig;
 use KaririCode\Devkit\Core\ProjectContext;
 use KaririCode\Devkit\Core\ProjectDetector;
 use KaririCode\Devkit\Exception\DevkitException;
@@ -19,9 +20,13 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Devkit::class)]
 #[UsesClass(ProjectContext::class)]
+#[UsesClass(ProjectDetector::class)]
+#[UsesClass(DevkitConfig::class)]
 #[UsesClass(DevkitException::class)]
 #[UsesClass(QualityReport::class)]
 #[UsesClass(ToolResult::class)]
+#[UsesClass(\KaririCode\Devkit\Contract\ConfigGenerator::class)]
+#[UsesClass(\KaririCode\Devkit\Contract\ToolRunner::class)]
 final class DevkitTest extends TestCase
 {
     private string $tmpDir;
