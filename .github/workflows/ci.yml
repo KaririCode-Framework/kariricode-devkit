@@ -23,16 +23,16 @@ jobs:
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Initialize devkit
-        run: vendor/bin/kcode init
+        run: php bin/kcode init
 
       - name: Code style check
-        run: vendor/bin/kcode cs:fix --check
+        run: php bin/kcode cs:fix --check
 
       - name: Static analysis
-        run: vendor/bin/kcode analyse
+        run: php bin/kcode analyse
 
       - name: Tests
-        run: vendor/bin/kcode test --coverage
+        run: php bin/kcode test --coverage
 
   build-phar:
     name: PHAR Build Smoke Test

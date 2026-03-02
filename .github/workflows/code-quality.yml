@@ -113,10 +113,10 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Initialize devkit config
-        run: vendor/bin/kcode init
+        run: php bin/kcode init
 
       - name: Run PHPStan via kcode
-        run: vendor/bin/kcode analyse
+        run: php bin/kcode analyse
 
   # ============================================================================
   # CODE STYLE (PHP CS Fixer via kcode)
@@ -149,10 +149,10 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Initialize devkit config
-        run: vendor/bin/kcode init
+        run: php bin/kcode init
 
       - name: Check code style via kcode
-        run: vendor/bin/kcode cs:fix --check
+        run: php bin/kcode cs:fix --check
 
   # ============================================================================
   # QUALITY SUMMARY
