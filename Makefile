@@ -4,17 +4,17 @@
 # ╚══════════════════════════════════════════════════════════════╝
 #
 #   make               Show available targets
-#   make release       Full pipeline: lint → test → build → verify
+#   make quality       Run full quality pipeline via kcode
+#   make release       Full release: quality → build → verify
 #   make build         Compile kcode.phar
-#   make quality       Run full quality pipeline
 #
 # Requirements:
 #   PHP ≥ 8.4  ·  Composer 2.x  ·  humbug/box 4.x (for PHAR builds)
 #
 
 .PHONY: help install install-prod build verify self-test \
-        quality test analyse cs-check cs-fix rector format \
-        clean distclean release lint check-env
+        quality test analyse cs-check cs-fix rector format security lint \
+        clean distclean release check-env
 
 .DEFAULT_GOAL := help
 SHELL         := /bin/bash
@@ -28,8 +28,11 @@ KCODE       := vendor/bin/kcode
 
 BUILD_DIR   := build
 PHAR        := $(BUILD_DIR)/kcode.phar
-VERSION     := $(shell $(PHP) -r "echo json_decode(file_get_contents('box.json'))->metadata->version ?? 'dev';" 2>/dev/null || echo "dev")
-GIT_TAG     := $(shell git describe --tags --abbrev=0 2>/dev/null || echo "untagged")
+
+# Version: prefer git tag, fall back to box.json metadata, then 'dev'
+VERSION     := $(shell git describe --tags --abbrev=0 2>/dev/null \
+               || $(PHP) -r "echo json_decode(file_get_contents('box.json'),true)['metadata']['version'] ?? 'dev';" 2>/dev/null \
+               || echo "dev")
 COMMIT      := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 TIMESTAMP   := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
@@ -75,12 +78,12 @@ help: ## Show available targets
 	@printf "  $(_BOLD)KaririCode Devkit$(_RESET) v$(VERSION) $(_DIM)($(COMMIT))$(_RESET)\n"
 	@printf "  $(_DIM)Unified quality toolchain for KaririCode Framework$(_RESET)\n"
 	@printf "\n"
-	@printf "  $(_YELLOW)Build$(_RESET)\n"
-	@grep -E '^(install|install-prod|build|verify|self-test|clean|distclean|release|check-env):.*?## ' $(MAKEFILE_LIST) | \
+	@printf "  $(_YELLOW)Dependencies & Build$(_RESET)\n"
+	@grep -E '^(install|install-prod|build|verify|self-test|check-env|clean|distclean|release):.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "    $(_GREEN)%-16s$(_RESET) %s\n", $$1, $$2}'
 	@printf "\n"
-	@printf "  $(_YELLOW)Quality$(_RESET)\n"
-	@grep -E '^(quality|test|analyse|cs-check|cs-fix|rector|format|lint):.*?## ' $(MAKEFILE_LIST) | \
+	@printf "  $(_YELLOW)Quality & Toolchain$(_RESET)\n"
+	@grep -E '^(quality|test|analyse|cs-check|cs-fix|rector|format|security|lint):.*?## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "    $(_GREEN)%-16s$(_RESET) %s\n", $$1, $$2}'
 	@printf "\n"
 	@printf "  $(_DIM)Override defaults:  PHP=php8.4 COMPOSER=composer2 make build$(_RESET)\n"
@@ -91,50 +94,53 @@ help: ## Show available targets
 #  Dependencies
 # ══════════════════════════════════════════════════════════════
 
-install: ## Install all Composer dependencies
+install: ## Install all Composer dependencies (dev + prod)
 	$(call _header,Installing dependencies)
-	@$(COMPOSER) install --no-interaction --prefer-dist --optimize-autoloader
+	@$(COMPOSER) install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 	$(call _ok,Dependencies installed)
 
-install-prod: ## Install without dev deps (minimal PHAR)
+install-prod: ## Install without dev deps (for PHAR compilation)
 	$(call _header,Installing production dependencies)
-	@$(COMPOSER) install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+	@$(COMPOSER) install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 	$(call _ok,Production dependencies installed)
 
 # ══════════════════════════════════════════════════════════════
-#  Quality
+#  Quality (via kcode CLI)
 # ══════════════════════════════════════════════════════════════
 
-quality: | _require-vendor ## Full pipeline: cs-check → analyse → test
+quality: | _require-vendor _require-kcode ## Full pipeline: cs:check → analyse → test (via kcode quality)
 	$(call _header,Quality Pipeline)
 	@$(KCODE) init
 	@$(KCODE) quality
 
-test: | _require-vendor ## Run PHPUnit tests
+test: | _require-vendor _require-kcode ## Run PHPUnit tests
 	@$(KCODE) test $(ARGS)
 
-analyse: | _require-vendor ## Run PHPStan + Psalm
+analyse: | _require-vendor _require-kcode ## Run static analysis (PHPStan + Psalm)
 	@$(KCODE) analyse $(ARGS)
 
-cs-check: | _require-vendor ## Check code style (dry-run)
+cs-check: | _require-vendor _require-kcode ## Check code style — dry run (no files changed)
 	@$(KCODE) cs:fix --check $(ARGS)
 
-cs-fix: | _require-vendor ## Fix code style
+cs-fix: | _require-vendor _require-kcode ## Fix code style with PHP-CS-Fixer
 	@$(KCODE) cs:fix $(ARGS)
 
-rector: | _require-vendor ## Run Rector (dry-run)
+rector: | _require-vendor _require-kcode ## Run Rector in dry-run mode (use ARGS=--fix to apply)
 	@$(KCODE) rector $(ARGS)
 
-format: | _require-vendor ## Apply all formatting (cs-fix + rector)
+format: | _require-vendor _require-kcode ## Apply all formatting: cs:fix + rector --fix
 	@$(KCODE) format $(ARGS)
 
-lint: cs-check analyse ## Lint: code style + static analysis
+security: | _require-vendor _require-kcode ## Run composer audit for known vulnerabilities
+	@$(KCODE) security
+
+lint: cs-check analyse ## Lint: code style check + static analysis (no fixes applied)
 
 # ══════════════════════════════════════════════════════════════
-#  Build
+#  Build (PHAR)
 # ══════════════════════════════════════════════════════════════
 
-build: | _require-box _require-vendor ## Compile kcode.phar
+build: | _require-box _require-vendor ## Compile kcode.phar via humbug/box
 	$(call _header,Building kcode.phar v$(VERSION))
 	@mkdir -p $(BUILD_DIR)
 	@START=$$(date +%s%N); \
@@ -153,7 +159,7 @@ build: | _require-box _require-vendor ## Compile kcode.phar
 #  Verification
 # ══════════════════════════════════════════════════════════════
 
-verify: | _require-phar ## Verify PHAR integrity and functionality
+verify: | _require-phar ## Verify PHAR integrity and smoke-test all commands
 	$(call _header,Verifying kcode.phar)
 	@PASS=0; FAIL=0; \
 	\
@@ -177,7 +183,7 @@ verify: | _require-phar ## Verify PHAR integrity and functionality
 		exit 1; \
 	fi
 
-self-test: | _require-phar ## Run kcode.phar against this project
+self-test: | _require-phar ## Run kcode.phar against this project (init + migrate dry-run)
 	$(call _header,Self-test — kcode.phar on devkit project)
 	@$(PHP) $(PHAR) init
 	@$(PHP) $(PHAR) migrate --dry-run
@@ -187,28 +193,27 @@ self-test: | _require-phar ## Run kcode.phar against this project
 #  Clean
 # ══════════════════════════════════════════════════════════════
 
-clean: ## Remove build artifacts
+clean: ## Remove build artefacts (build/ and .kcode/build/)
 	$(call _header,Cleaning)
 	@rm -rf $(BUILD_DIR)
 	@rm -rf .kcode/build
-	$(call _ok,Build artifacts removed)
+	$(call _ok,Build artefacts removed)
 
-distclean: clean ## Full clean: artifacts + vendor + lock
+distclean: clean ## Full clean: artefacts + vendor (for a clean composer install)
 	@rm -rf vendor
-	@rm -f composer.lock
-	$(call _ok,Vendor and lock file removed)
+	$(call _ok,Vendor removed — run 'make install' to restore)
 
 # ══════════════════════════════════════════════════════════════
 #  Release
 # ══════════════════════════════════════════════════════════════
 
-release: quality build verify ## Full release: quality → build → verify
+release: quality build verify ## Full release pipeline: quality → build → verify
 	@printf "\n"
 	@printf "  $(_GREEN)═══════════════════════════════════════════════════$(_RESET)\n"
 	@printf "  $(_GREEN)  kcode.phar v$(VERSION) ready for release         $(_RESET)\n"
 	@printf "  $(_GREEN)═══════════════════════════════════════════════════$(_RESET)\n"
 	@printf "\n"
-	@printf "  $(_BOLD)Artifact$(_RESET)   $(PHAR)\n"
+	@printf "  $(_BOLD)Artefact$(_RESET)   $(PHAR)\n"
 	@printf "  $(_BOLD)Size$(_RESET)       $$(du -h $(PHAR) | cut -f1)\n"
 	@printf "  $(_BOLD)Commit$(_RESET)     $(COMMIT)\n"
 	@printf "  $(_BOLD)Time$(_RESET)       $(TIMESTAMP)\n"
@@ -221,14 +226,14 @@ release: quality build verify ## Full release: quality → build → verify
 #  Diagnostics
 # ══════════════════════════════════════════════════════════════
 
-check-env: ## Show build environment info
+check-env: ## Show build environment info (PHP, Composer, Box, Git, phar.readonly)
 	$(call _header,Build Environment)
 	@printf "  $(_BOLD)PHP$(_RESET)            $$($(PHP) -v 2>/dev/null | head -1 || echo 'not found')\n"
 	@printf "  $(_BOLD)Composer$(_RESET)       "; $(COMPOSER) --version 2>/dev/null | head -1 || printf "not found\n"
-	@printf "  $(_BOLD)Box$(_RESET)            "; $(BOX) --version 2>/dev/null | head -1 || printf "not found\n"
-	@printf "  $(_BOLD)Git$(_RESET)            $(GIT_TAG) ($(COMMIT))\n"
-	@printf "  $(_BOLD)Version$(_RESET)        $(VERSION)\n"
-	@printf "  $(_BOLD)phar.readonly$(_RESET)  $$($(PHP) -r 'echo ini_get("phar.readonly") ? "On ⚠" : "Off ✓";' 2>/dev/null)\n"
+	@printf "  $(_BOLD)Box$(_RESET)            "; $(BOX) --version 2>/dev/null | head -1 || printf "not found (install: https://github.com/box-project/box)\n"
+	@printf "  $(_BOLD)kcode$(_RESET)          "; test -f $(KCODE) && $(PHP) $(KCODE) --version 2>/dev/null || printf "not found — run make install\n"
+	@printf "  $(_BOLD)Git tag$(_RESET)        $(VERSION) ($(COMMIT))\n"
+	@printf "  $(_BOLD)phar.readonly$(_RESET)  $$($(PHP) -r 'echo ini_get("phar.readonly") ? "On (WARN: use php -d phar.readonly=0 for builds)" : "Off (OK)";' 2>/dev/null)\n"
 	@printf "\n"
 
 # ── Guards ─────────────────────────────────────────────────
@@ -238,10 +243,7 @@ _require-box:
 		printf "\n"; \
 		printf "  $(_RED)✗$(_RESET) $(_BOLD)humbug/box$(_RESET) not found\n"; \
 		printf "\n"; \
-		printf "  Install via Composer:\n"; \
-		printf "    $(_CYAN)composer global require humbug/box$(_RESET)\n"; \
-		printf "\n"; \
-		printf "  Or download standalone:\n"; \
+		printf "  Install standalone:\n"; \
 		printf "    $(_CYAN)wget -O box https://github.com/box-project/box/releases/latest/download/box.phar$(_RESET)\n"; \
 		printf "    $(_CYAN)chmod +x box && sudo mv box /usr/local/bin/box$(_RESET)\n"; \
 		printf "\n"; \
@@ -251,6 +253,12 @@ _require-box:
 _require-vendor:
 	@test -d vendor || { \
 		printf "\n  $(_RED)✗$(_RESET) vendor/ not found. Run $(_BOLD)make install$(_RESET) first.\n\n"; \
+		exit 1; \
+	}
+
+_require-kcode:
+	@test -f $(KCODE) || { \
+		printf "\n  $(_RED)✗$(_RESET) $(KCODE) not found. Run $(_BOLD)make install$(_RESET) first.\n\n"; \
 		exit 1; \
 	}
 
