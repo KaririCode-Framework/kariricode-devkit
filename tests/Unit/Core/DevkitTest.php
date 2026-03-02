@@ -22,11 +22,8 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(ProjectContext::class)]
 #[UsesClass(ProjectDetector::class)]
 #[UsesClass(DevkitConfig::class)]
-#[UsesClass(DevkitException::class)]
 #[UsesClass(QualityReport::class)]
 #[UsesClass(ToolResult::class)]
-#[UsesClass(\KaririCode\Devkit\Contract\ConfigGenerator::class)]
-#[UsesClass(\KaririCode\Devkit\Contract\ToolRunner::class)]
 final class DevkitTest extends TestCase
 {
     private string $tmpDir;

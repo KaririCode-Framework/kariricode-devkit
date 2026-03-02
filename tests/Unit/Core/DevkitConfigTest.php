@@ -8,11 +8,9 @@ use KaririCode\Devkit\Core\DevkitConfig;
 use KaririCode\Devkit\Exception\ConfigurationException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(DevkitConfig::class)]
-#[UsesClass(ConfigurationException::class)]
 final class DevkitConfigTest extends TestCase
 {
     private string $tmpDir;

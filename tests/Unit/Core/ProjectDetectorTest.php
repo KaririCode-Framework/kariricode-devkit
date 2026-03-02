@@ -16,7 +16,6 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(ProjectDetector::class)]
 #[UsesClass(ProjectContext::class)]
 #[UsesClass(DevkitConfig::class)]
-#[UsesClass(DevkitException::class)]
 final class ProjectDetectorTest extends TestCase
 {
     private string $tmpDir;

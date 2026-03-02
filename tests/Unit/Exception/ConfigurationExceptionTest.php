@@ -6,13 +6,11 @@ namespace KaririCode\Devkit\Tests\Unit\Exception;
 
 use KaririCode\Devkit\Exception\ConfigurationException;
 use KaririCode\Devkit\Exception\DevkitException;
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(ConfigurationException::class)]
-#[UsesClass(DevkitException::class)]
+#[CoversNothing]
 final class ConfigurationExceptionTest extends TestCase
 {
     #[Test]

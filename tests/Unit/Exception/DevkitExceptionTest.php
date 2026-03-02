@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace KaririCode\Devkit\Tests\Unit\Exception;
 
 use KaririCode\Devkit\Exception\DevkitException;
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(DevkitException::class)]
+#[CoversNothing]
 final class DevkitExceptionTest extends TestCase
 {
     #[Test]
