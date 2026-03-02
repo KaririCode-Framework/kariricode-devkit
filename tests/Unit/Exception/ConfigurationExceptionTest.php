@@ -8,9 +8,11 @@ use KaririCode\Devkit\Exception\ConfigurationException;
 use KaririCode\Devkit\Exception\DevkitException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(ConfigurationException::class)]
+#[UsesClass(DevkitException::class)]
 final class ConfigurationExceptionTest extends TestCase
 {
     #[Test]
