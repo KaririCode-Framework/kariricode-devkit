@@ -54,7 +54,7 @@
         "kcode:cs-check": "bin/kcode cs:fix --check",
         "kcode:quality": "bin/kcode quality",
         "kcode:migrate": "bin/kcode migrate",
-        "build": "php -d phar.readonly=0 box compile --config=box.json"
+        "build": "php -d phar.readonly=0 bin/build-phar.php"
     },
     "config": {
         "sort-packages": true,

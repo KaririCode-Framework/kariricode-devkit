@@ -9,7 +9,7 @@
 #   make build         Compile kcode.phar
 #
 # Requirements:
-#   PHP ≥ 8.4  ·  Composer 2.x  ·  humbug/box 4.x (for PHAR builds)
+#   PHP ≥ 8.4  ·  Composer 2.x
 #
 
 .PHONY: help install install-prod build verify self-test \
@@ -23,16 +23,14 @@ SHELL         := /bin/bash
 
 PHP         ?= php
 COMPOSER    ?= composer
-BOX         ?= box
 KCODE       := vendor/bin/kcode
+PHAR_BUILDER := bin/build-phar.php
 
 BUILD_DIR   := build
 PHAR        := $(BUILD_DIR)/kcode.phar
 
-# Version: prefer git tag, fall back to box.json metadata, then 'dev'
-VERSION     := $(shell git describe --tags --abbrev=0 2>/dev/null \
-               || $(PHP) -r "echo json_decode(file_get_contents('box.json'),true)['metadata']['version'] ?? 'dev';" 2>/dev/null \
-               || echo "dev")
+# Version: prefer git tag, then 'dev'
+VERSION     := $(shell git describe --tags --abbrev=0 2>/dev/null || echo "dev")
 COMMIT      := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 TIMESTAMP   := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
@@ -140,11 +138,11 @@ lint: cs-check analyse ## Lint: code style check + static analysis (no fixes app
 #  Build (PHAR)
 # ══════════════════════════════════════════════════════════════
 
-build: | _require-box _require-vendor ## Compile kcode.phar via humbug/box
+build: | _require-vendor ## Compile kcode.phar via bin/build-phar.php
 	$(call _header,Building kcode.phar v$(VERSION))
 	@mkdir -p $(BUILD_DIR)
 	@START=$$(date +%s%N); \
-	$(PHP) -d phar.readonly=0 $$(command -v $(BOX)) compile --config=box.json && \
+	$(PHP) -d phar.readonly=0 $(PHAR_BUILDER) && \
 	END=$$(date +%s%N); \
 	ELAPSED=$$(( (END - START) / 1000000 )); \
 	SECS=$$(( ELAPSED / 1000 )); \
@@ -230,7 +228,7 @@ check-env: ## Show build environment info (PHP, Composer, Box, Git, phar.readonl
 	$(call _header,Build Environment)
 	@printf "  $(_BOLD)PHP$(_RESET)            $$($(PHP) -v 2>/dev/null | head -1 || echo 'not found')\n"
 	@printf "  $(_BOLD)Composer$(_RESET)       "; $(COMPOSER) --version 2>/dev/null | head -1 || printf "not found\n"
-	@printf "  $(_BOLD)Box$(_RESET)            "; $(BOX) --version 2>/dev/null | head -1 || printf "not found (install: https://github.com/box-project/box)\n"
+	@printf "  $(_BOLD)PHAR builder$(_RESET)   "; test -f $(PHAR_BUILDER) && printf "bin/build-phar.php (OK)\n" || printf "not found\n"
 	@printf "  $(_BOLD)kcode$(_RESET)          "; test -f $(KCODE) && $(PHP) $(KCODE) --version 2>/dev/null || printf "not found — run make install\n"
 	@printf "  $(_BOLD)Git tag$(_RESET)        $(VERSION) ($(COMMIT))\n"
 	@printf "  $(_BOLD)phar.readonly$(_RESET)  $$($(PHP) -r 'echo ini_get("phar.readonly") ? "On (WARN: use php -d phar.readonly=0 for builds)" : "Off (OK)";' 2>/dev/null)\n"
@@ -238,15 +236,9 @@ check-env: ## Show build environment info (PHP, Composer, Box, Git, phar.readonl
 
 # ── Guards ─────────────────────────────────────────────────
 
-_require-box:
-	@command -v $(BOX) > /dev/null 2>&1 || { \
-		printf "\n"; \
-		printf "  $(_RED)✗$(_RESET) $(_BOLD)humbug/box$(_RESET) not found\n"; \
-		printf "\n"; \
-		printf "  Install standalone:\n"; \
-		printf "    $(_CYAN)wget -O box https://github.com/box-project/box/releases/latest/download/box.phar$(_RESET)\n"; \
-		printf "    $(_CYAN)chmod +x box && sudo mv box /usr/local/bin/box$(_RESET)\n"; \
-		printf "\n"; \
+_require-phar-builder:
+	@test -f $(PHAR_BUILDER) || { \
+		printf "\n  $(_RED)✗$(_RESET) $(_BOLD)$(PHAR_BUILDER)$(_RESET) not found. Expected at bin/build-phar.php.\n\n"; \
 		exit 1; \
 	}
 

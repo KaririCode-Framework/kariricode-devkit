@@ -506,15 +506,10 @@ Unidirectional. No cycles. Commands depend on the Devkit facade. Runners and gen
 
 - PHP 8.4+ with `phar.readonly=0`
 - Composer 2.x
-- [humbug/box](https://github.com/box-project/box) 4.x
 
 ### Quick Build
 
 ```bash
-# Install box standalone (recommended)
-wget -O box https://github.com/box-project/box/releases/latest/download/box.phar
-chmod +x box && sudo mv box /usr/local/bin/box
-
 # Full release pipeline: quality → build → verify
 make release
 ```
@@ -525,8 +520,8 @@ make release
 # 1. Install dependencies
 composer install
 
-# 2. Compile PHAR (~15-20 MB with GZ compression)
-php -d phar.readonly=0 box compile --config=box.json
+# 2. Compile PHAR
+php -d phar.readonly=0 bin/build-phar.php
 
 # 3. Verify
 php build/kcode.phar --version
@@ -548,7 +543,7 @@ git push --tags
 
 The CI compiles `kcode.phar`, verifies it, and attaches it to the GitHub Release automatically.
 
-See [docs/BUILDING.md](docs/BUILDING.md) for full build documentation, troubleshooting, and box.json details.
+See [docs/BUILDING.md](docs/BUILDING.md) for full build documentation and troubleshooting.
 
 ## Contributing
 
