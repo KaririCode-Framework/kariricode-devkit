@@ -23,19 +23,9 @@ jobs:
           ini-values: phar.readonly=0
           tools: composer:v2
 
-      - name: Install humbug/box
-        run: |
-          wget -q -O box https://github.com/box-project/box/releases/latest/download/box.phar
-          chmod +x box
-          sudo mv box /usr/local/bin/box
-          box --version
-
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
       - name: Compile PHAR
         run: |
-          php -d phar.readonly=0 box compile --config=box.json
+          php -d phar.readonly=0 bin/build-phar.php
           ls -lh build/kcode.phar
 
       - name: Verify PHAR
