@@ -27,5 +27,6 @@
 - [composer.json](../composer.json) — Package definition
 - [box.json](../box.json) — PHAR compilation configuration
 - [Makefile](../Makefile) — Build automation targets
-- [CI workflow](../.github/workflows/ci.yml) — Quality checks on push/PR
+- [CI workflow](../.github/workflows/ci.yml) — Tests + PHAR build on push/PR
+- [Code Quality workflow](../.github/workflows/code-quality.yml) — Security, PHPStan, CS-Fixer via kcode
 - [Release workflow](../.github/workflows/release.yml) — PHAR build on tag push

@@ -65,8 +65,8 @@ make self-test    # Run against this project
 ### Manual Build
 
 ```bash
-# 1. Install dependencies (with dev for quality tools inside PHAR)
-composer install --no-interaction --prefer-dist --optimize-autoloader
+# 1. Install dependencies (with dev — quality tools are bundled in the PHAR)
+composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
 # 2. Compile PHAR
 php -d phar.readonly=0 box compile --config=box.json
@@ -221,4 +221,4 @@ The version is stored in two places — keep them in sync:
 1. `src/Core/Devkit.php` → `private const string VERSION = '1.0.0';`
 2. `box.json` → `metadata.version`
 
-The Makefile reads the version from `box.json` for build output messaging.
+The Makefile resolves the version via `git describe --tags --abbrev=0` first, falling back to `box.json` metadata, then `'dev'`. Always tag releases with `git tag vX.Y.Z` before running `make release`.
