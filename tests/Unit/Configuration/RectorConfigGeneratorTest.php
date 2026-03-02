@@ -8,9 +8,11 @@ use KaririCode\Devkit\Configuration\RectorConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(RectorConfigGenerator::class)]
+#[UsesClass(ProjectContext::class)]
 final class RectorConfigGeneratorTest extends TestCase
 {
     private RectorConfigGenerator $generator;

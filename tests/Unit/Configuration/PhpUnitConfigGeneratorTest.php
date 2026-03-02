@@ -8,9 +8,11 @@ use KaririCode\Devkit\Configuration\PhpUnitConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(PhpUnitConfigGenerator::class)]
+#[UsesClass(ProjectContext::class)]
 final class PhpUnitConfigGeneratorTest extends TestCase
 {
     private PhpUnitConfigGenerator $generator;
