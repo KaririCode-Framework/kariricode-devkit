@@ -15,7 +15,6 @@ namespace KaririCode\Devkit\Core;
 final readonly class ProjectContext
 {
     public string $devkitDir;
-
     public string $buildDir;
 
     /**
