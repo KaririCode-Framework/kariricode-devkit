@@ -43,6 +43,7 @@ declare(strict_types=1);
     $devkit = new \KaririCode\Devkit\Core\Devkit($detector);
 
     // Register config generators
+    $devkit->addGenerator(new \KaririCode\Devkit\Configuration\KcodeComposerGenerator());
     $devkit->addGenerator(new \KaririCode\Devkit\Configuration\PhpUnitConfigGenerator());
     $devkit->addGenerator(new \KaririCode\Devkit\Configuration\PhpStanConfigGenerator());
     $devkit->addGenerator(new \KaririCode\Devkit\Configuration\CsFixerConfigGenerator());
@@ -75,7 +76,9 @@ declare(strict_types=1);
 
     $app = new \KaririCode\Devkit\Command\Application($devkit);
 
-    $app->register(new \KaririCode\Devkit\Command\InitCommand());
+    $app->register(new \KaririCode\Devkit\Command\InitCommand(
+        new \KaririCode\Devkit\Core\MigrationDetector(),
+    ));
     $app->register(new \KaririCode\Devkit\Command\MigrateCommand(
         new \KaririCode\Devkit\Core\MigrationDetector(),
     ));

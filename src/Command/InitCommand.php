@@ -8,14 +8,24 @@ use KaririCode\Devkit\Core\Devkit;
 use KaririCode\Devkit\Core\MigrationDetector;
 
 /**
- * Generates all config files inside `.kcode/`.
+ * Generates all config files inside `.kcode/` and installs dev tools.
  *
- * With `--config`, scaffolds a `devkit.php` override file in the project root.
+ * On `kcode init`, writes all tool configs (phpunit.xml.dist, phpstan.neon, etc.)
+ * to `.kcode/` via the registered generators, then runs `composer install
+ * --working-dir=.kcode/` to install the tool binaries into `.kcode/vendor/bin/`.
+ *
+ * Flags:
+ *   --config         Scaffold a `devkit.php` override file in the project root
+ *   --skip-install   Generate configs only (skip composer install step)
  *
  * @since 1.0.0
  */
 final class InitCommand extends AbstractCommand
 {
+    public function __construct(
+        private readonly MigrationDetector $detector,
+    ) {
+    }
     #[\Override]
     public function name(): string
     {
@@ -38,20 +48,37 @@ final class InitCommand extends AbstractCommand
         $this->info("Namespace: {$context->namespace}");
         $this->info("PHP: {$context->phpVersion}");
 
+        // ── Phase 1: Generate config files into .kcode/ ─────────────────
         $count = $devkit->init();
 
         $this->line();
         $this->info("Generated {$count} config file(s) in .kcode/");
         $this->info(".kcode/ added to .gitignore (regenerate with kcode init)");
 
-        // Scaffold devkit.php if requested
+        // ── Phase 2: Install dev tools into .kcode/vendor/ ──────────────
+        if (! $this->hasFlag($arguments, '--skip-install')) {
+            $this->line();
+            $this->info("Installing dev tools into .kcode/vendor/ ...");
+
+            $exitCode = $devkit->installTools($context->projectRoot);
+
+            if (0 !== $exitCode) {
+                $this->warning("composer install failed (exit {$exitCode}). Run manually:");
+                $this->line("  composer install --working-dir={$context->devkitDir} --no-interaction");
+
+                return $exitCode;
+            }
+
+            $this->info("Dev tools installed in .kcode/vendor/bin/");
+        }
+
+        // ── Phase 3: Scaffold devkit.php if requested ────────────────────
         if ($this->hasFlag($arguments, '--config')) {
             $this->scaffoldDevkitConfig($context->projectRoot);
         }
 
-        // Hint: detect redundant root-level configs and dev dependencies
-        $detector = new MigrationDetector();
-        $migration = $detector->detect($context->projectRoot);
+        // ── Phase 4: Hint about redundant legacy configs ──────────────────
+        $migration = $this->detector->detect($context->projectRoot);
 
         if ($migration->hasRedundancies) {
             $this->line();
