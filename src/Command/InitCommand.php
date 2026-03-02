@@ -26,6 +26,7 @@ final class InitCommand extends AbstractCommand
         private readonly MigrationDetector $detector,
     ) {
     }
+
     #[\Override]
     public function name(): string
     {

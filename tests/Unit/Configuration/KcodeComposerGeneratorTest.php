@@ -55,7 +55,7 @@ final class KcodeComposerGeneratorTest extends TestCase
     public function generateProducesValidJsonWithDefaultVersions(): void
     {
         $generator = new KcodeComposerGenerator();
-        $output    = $generator->generate($this->context);
+        $output = $generator->generate($this->context);
 
         /** @var array<string, mixed> $manifest */
         $manifest = json_decode($output, true, 512, \JSON_THROW_ON_ERROR);
@@ -93,7 +93,7 @@ final class KcodeComposerGeneratorTest extends TestCase
         );
 
         $generator = new KcodeComposerGenerator();
-        $output    = $generator->generate($contextWithVersions);
+        $output = $generator->generate($contextWithVersions);
 
         /** @var array<string, mixed> $manifest */
         $manifest = json_decode($output, true, 512, \JSON_THROW_ON_ERROR);
@@ -109,7 +109,7 @@ final class KcodeComposerGeneratorTest extends TestCase
     public function generateIncludesComposerConfigSection(): void
     {
         $generator = new KcodeComposerGenerator();
-        $output    = $generator->generate($this->context);
+        $output = $generator->generate($this->context);
 
         /** @var array<string, mixed> $manifest */
         $manifest = json_decode($output, true, 512, \JSON_THROW_ON_ERROR);
@@ -123,7 +123,7 @@ final class KcodeComposerGeneratorTest extends TestCase
     public function generateOutputEndsWithNewline(): void
     {
         $generator = new KcodeComposerGenerator();
-        $output    = $generator->generate($this->context);
+        $output = $generator->generate($this->context);
 
         $this->assertStringEndsWith(\PHP_EOL, $output);
     }

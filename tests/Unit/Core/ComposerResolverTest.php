@@ -16,7 +16,7 @@ final class ComposerResolverTest extends TestCase
     public function resolveReturnsNonEmptyString(): void
     {
         $resolver = new ComposerResolver();
-        $result   = $resolver->resolve();
+        $result = $resolver->resolve();
 
         $this->assertIsString($result);
         $this->assertNotEmpty($result);
@@ -26,7 +26,7 @@ final class ComposerResolverTest extends TestCase
     public function resolveDoesNotReturnShellFragment(): void
     {
         $resolver = new ComposerResolver();
-        $result   = $resolver->resolve();
+        $result = $resolver->resolve();
 
         // Must be a single executable path — no shell fragments like "php /path/to/file"
         // (a shell fragment would break proc_open's array invocation)
@@ -42,7 +42,7 @@ final class ComposerResolverTest extends TestCase
         putenv('COMPOSER_BINARY=/usr/bin/env');
 
         $resolver = new ComposerResolver();
-        $result   = $resolver->resolve();
+        $result = $resolver->resolve();
 
         $this->assertSame('/usr/bin/env', $result);
 
@@ -62,7 +62,7 @@ final class ComposerResolverTest extends TestCase
         putenv('COMPOSER_BINARY=/non/existent/path/composer');
 
         $resolver = new ComposerResolver();
-        $result   = $resolver->resolve();
+        $result = $resolver->resolve();
 
         // Should fall through to PATH or fallback — not return the non-executable path
         $this->assertNotSame('/non/existent/path/composer', $result);

@@ -23,20 +23,20 @@ use KaririCode\Devkit\Core\ProjectContext;
 final class KcodeComposerGenerator implements ConfigGenerator
 {
     private const array DEFAULT_TOOL_VERSIONS = [
-        'phpunit/phpunit'               => '^12.5',
-        'phpstan/phpstan'               => '^2.0',
-        'friendsofphp/php-cs-fixer'     => '^3.64',
-        'rector/rector'                 => '^2.0',
-        'vimeo/psalm'                  => '^6.0',
+        'phpunit/phpunit' => '^12.5',
+        'phpstan/phpstan' => '^2.0',
+        'friendsofphp/php-cs-fixer' => '^3.64',
+        'rector/rector' => '^2.0',
+        'vimeo/psalm' => '^6.0',
     ];
 
     /** @var array<string, string> Maps devkit.php tool short-names → Composer package names */
     private const array TOOL_SHORT_NAME_MAP = [
-        'phpunit'       => 'phpunit/phpunit',
-        'phpstan'       => 'phpstan/phpstan',
-        'php-cs-fixer'  => 'friendsofphp/php-cs-fixer',
-        'rector'        => 'rector/rector',
-        'psalm'         => 'vimeo/psalm',
+        'phpunit' => 'phpunit/phpunit',
+        'phpstan' => 'phpstan/phpstan',
+        'php-cs-fixer' => 'friendsofphp/php-cs-fixer',
+        'rector' => 'rector/rector',
+        'psalm' => 'vimeo/psalm',
     ];
 
     #[\Override]
@@ -57,23 +57,23 @@ final class KcodeComposerGenerator implements ConfigGenerator
         $require = $this->resolveVersions($context->toolVersions);
 
         $manifest = [
-            'name'        => 'kariricode/devkit-tools',
+            'name' => 'kariricode/devkit-tools',
             'description' => 'Dev toolchain managed by kcode — do not edit manually.',
-            'require'     => $require,
-            'config'      => [
-                'bin-compat'           => 'full',
-                'optimize-autoloader'  => true,
-                'sort-packages'        => true,
-                'preferred-install'    => 'dist',
-                'allow-plugins'        => [
+            'require' => $require,
+            'config' => [
+                'bin-compat' => 'full',
+                'optimize-autoloader' => true,
+                'sort-packages' => true,
+                'preferred-install' => 'dist',
+                'allow-plugins' => [
                     'infection/extension-installer' => false,
                 ],
             ],
             'minimum-stability' => 'stable',
-            'prefer-stable'     => true,
+            'prefer-stable' => true,
         ];
 
-        return json_encode($manifest, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES) . \PHP_EOL;
+        return (string) json_encode($manifest, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES) . \PHP_EOL;
     }
 
     /**
