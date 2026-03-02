@@ -52,7 +52,7 @@ Your `composer.json` goes from:
 ```json
 {
     "require-dev": {
-        "phpunit/phpunit": "^11.0",
+        "phpunit/phpunit": "^12.0",
         "phpstan/phpstan": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.64",
         "rector/rector": "^2.0",
@@ -379,7 +379,7 @@ jobs:
         with:
           php-version: '8.4'
           coverage: pcov
-      - run: composer install --no-progress
+      - run: composer install --no-progress --no-scripts
       - run: vendor/bin/kcode init
       - run: vendor/bin/kcode migrate --no-interaction
       - run: vendor/bin/kcode quality
@@ -492,8 +492,8 @@ Unidirectional. No cycles. Commands depend on the Devkit facade. Runners and gen
 
 | Metric | Value |
 |---|---|
-| PHP source files | 36 |
-| Total PHP lines | ~2,300 |
+| PHP source files | 38 |
+| Total PHP lines | ~2,900 |
 | External runtime dependencies | 0 |
 | Supported tools | 6 (PHPUnit, PHPStan, CS-Fixer, Rector, Psalm, Composer Audit) |
 | CLI commands | 10 |
@@ -511,8 +511,9 @@ Unidirectional. No cycles. Commands depend on the Devkit facade. Runners and gen
 ### Quick Build
 
 ```bash
-# Install box globally
-composer global require humbug/box
+# Install box standalone (recommended)
+wget -O box https://github.com/box-project/box/releases/latest/download/box.phar
+chmod +x box && sudo mv box /usr/local/bin/box
 
 # Full release pipeline: quality → build → verify
 make release
