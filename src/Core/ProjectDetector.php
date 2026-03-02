@@ -185,7 +185,7 @@ final class ProjectDetector
             'statements' => ['break', 'continue', 'declare', 'return', 'throw', 'try'],
         ],
         'class_attributes_separation' => [
-            'elements' => ['method' => 'one', 'property' => 'one'],
+            'elements' => ['method' => 'one', 'property' => 'none'],
         ],
         'method_argument_space' => [
             'on_multiline' => 'ensure_fully_multiline',

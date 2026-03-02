@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 final class ProjectContextTest extends TestCase
 {
     private ProjectContext $context;
-
     private string $root;
 
     protected function setUp(): void
