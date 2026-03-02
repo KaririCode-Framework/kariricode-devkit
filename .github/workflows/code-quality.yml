@@ -32,8 +32,22 @@ jobs:
       - name: Validate composer.json
         run: composer validate --strict --no-check-lock
 
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-scripts
+
       - name: Check platform requirements
-        run: composer check-platform-reqs --no-dev
+        run: composer check-platform-reqs
 
   # ============================================================================
   # SECURITY AUDIT

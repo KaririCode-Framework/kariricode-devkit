@@ -48,17 +48,11 @@ jobs:
           extensions: phar, zlib
           ini-values: phar.readonly=0
 
-      - name: Install humbug/box
-        run: |
-          wget -q -O box https://github.com/box-project/box/releases/latest/download/box.phar
-          chmod +x box
-          sudo mv box /usr/local/bin/box
-
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
       - name: Compile PHAR
-        run: php -d phar.readonly=0 box compile --config=box.json
+        run: php -d phar.readonly=0 bin/build-phar.php
 
       - name: Verify PHAR
         run: |
