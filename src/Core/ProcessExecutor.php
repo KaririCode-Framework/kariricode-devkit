@@ -99,6 +99,7 @@ final readonly class ProcessExecutor
 
         // Tier 3: Global PATH
         $basename = basename($vendorBin);
+        /** @psalm-suppress ForbiddenCode — shell_exec is intentional for binary resolution; input is escaped */
         $globalBin = trim((string) shell_exec('command -v ' . escapeshellarg($basename) . ' 2>/dev/null'));
         if ('' !== $globalBin && is_executable($globalBin)) {
             return $globalBin;
