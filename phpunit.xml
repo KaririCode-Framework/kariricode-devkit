@@ -13,9 +13,6 @@
         <testsuite name="Integration">
             <directory>tests/Integration</directory>
         </testsuite>
-        <testsuite name="Functional">
-            <directory>tests/Functional</directory>
-        </testsuite>
     </testsuites>
     <source restrictNotices="true" restrictWarnings="true" ignoreIndirectDeprecations="true">
         <include>
@@ -32,8 +29,6 @@
     </coverage>
     <logging>
         <junit outputFile="reports/junit.xml" />
-        <testdoxHtml outputFile="reports/testdox.html" />
-        <testdoxText outputFile="reports/testdox.txt" />
     </logging>
     <php>
         <env name="APP_ENV" value="testing" />
