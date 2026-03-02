@@ -78,8 +78,7 @@ final class CsFixerConfigGenerator implements ConfigGenerator
         $export = (string) preg_replace('/^array \($/m', '[', $export);
         $export = (string) preg_replace('/^\)$/m', ']', $export);
         $export = str_replace('array (', '[', $export);
-        $export = str_replace(')', ']', $export);
 
-        return $export;
+        return str_replace(')', ']', $export);
     }
 }
