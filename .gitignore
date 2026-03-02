@@ -1,8 +1,48 @@
 /vendor/
 /build/
 /.kcode/
-.phpunit.cache
+
+# PHPUnit
+.phpunit.cache/
 .phpunit.result.cache
+/coverage/
+/reports/
+
+# CS-Fixer
 .php-cs-fixer.cache
-composer.lock
+
+# PHAR artefacts
 *.phar
+
+# composer.lock (library — callers pin versions)
+composer.lock
+
+# Environment files
+.env
+.env.*.local
+
+# IDE
+/.vscode/
+/.idea/
+*.code-workspace
+
+# Docker/legacy scaffold (not part of this library)
+docker-compose.yml
+docker-compose.override.yml
+.env.example
+.env.xdebug
+
+# Misc legacy config
+.gitattributes
+.editorconfig
+infection.json
+phpbench.json
+phpcs.xml
+phpmd.xml
+phpstan.neon
+.php-cs-fixer.php
+.rector.php
+
+# OS
+.DS_Store
+Thumbs.db
