@@ -1,6 +1,10 @@
-# KaririCode Devkit — Documentation
+# KaririCode Devkit — Documentation Index
 
-## Architecture Decision Records (ADR)
+Documentation for the **kariricode/devkit** package — the unified quality toolchain for the KaririCode Framework ecosystem.
+
+---
+
+## Architecture Decision Records
 
 | ADR | Title | Status |
 |---|---|---|
@@ -8,7 +12,7 @@
 | [ADR-002](adr/ADR-002-zero-dependencies.md) | Zero External Dependencies in Core | Accepted |
 | [ADR-003](adr/ADR-003-config-generation.md) | Configuration Generation Over Manual Configuration | Accepted |
 | [ADR-004](adr/ADR-004-binary-resolution.md) | Three-Tier Binary Resolution Strategy | Accepted |
-| [ADR-005](adr/ADR-005-kariricode-directory.md) | Centralized .kcode/ Directory Convention | Accepted |
+| [ADR-005](adr/ADR-005-kariricode-directory.md) | Centralized `.kcode/` Directory Convention | Accepted |
 | [ADR-006](adr/ADR-006-immutable-value-objects.md) | Immutable Value Objects for Tool Results | Accepted |
 
 ## Specifications
@@ -21,12 +25,13 @@
 
 ## Quick Navigation
 
-- [README](../README.md) — Installation, usage, CLI reference
-- [BUILDING](BUILDING.md) — PHAR compilation, box.json, troubleshooting
-- [CHANGELOG](../CHANGELOG.md) — Release history
-- [composer.json](../composer.json) — Package definition
-- [box.json](../box.json) — PHAR compilation configuration
-- [Makefile](../Makefile) — Build automation targets
-- [CI workflow](../.github/workflows/ci.yml) — Tests + PHAR build on push/PR
-- [Code Quality workflow](../.github/workflows/code-quality.yml) — Security, PHPStan, CS-Fixer via kcode
-- [Release workflow](../.github/workflows/release.yml) — PHAR build on tag push
+| Document | Description |
+|---|---|
+| [README](../README.md) | Installation, usage, CLI reference, architecture |
+| [BUILDING.md](BUILDING.md) | PHAR compilation, troubleshooting, release automation |
+| [CHANGELOG](../CHANGELOG.md) | Release history and migration notes |
+| [composer.json](../composer.json) | Package definition and Composer scripts |
+| [Makefile](../Makefile) | Build automation (`make help` for all targets) |
+| [ci.yml](../.github/workflows/ci.yml) | Quality pipeline on push/PR |
+| [code-quality.yml](../.github/workflows/code-quality.yml) | Security, PHPStan, CS-Fixer via kcode CLI |
+| [release.yml](../.github/workflows/release.yml) | Automated PHAR release on tag push |
