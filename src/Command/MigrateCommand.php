@@ -27,16 +27,19 @@ final class MigrateCommand extends AbstractCommand
     ) {
     }
 
+    #[\Override]
     public function name(): string
     {
         return 'migrate';
     }
 
+    #[\Override]
     public function description(): string
     {
         return 'Detect and remove redundant dev dependencies and root configs';
     }
 
+    #[\Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Migrate');
@@ -47,7 +50,7 @@ final class MigrateCommand extends AbstractCommand
         $context = $devkit->context();
         $report = $this->detector->detect($context->projectRoot);
 
-        if (!$report->hasRedundancies) {
+        if (! $report->hasRedundancies) {
             $this->info('No redundant dependencies or config files found. Project is clean.');
 
             return 0;
@@ -92,7 +95,7 @@ final class MigrateCommand extends AbstractCommand
                     $this->info(\sprintf(
                         'Removed %d package(s) from composer.json: %s',
                         \count($packagesRemoved),
-                        \implode(', ', $packagesRemoved),
+                        implode(', ', $packagesRemoved),
                     ));
                 }
             } else {
@@ -146,7 +149,7 @@ final class MigrateCommand extends AbstractCommand
             $this->section('Root-level cache paths');
 
             foreach ($report->redundantCachePaths as $cachePath) {
-                $isDir = \is_dir($report->projectRoot . \DIRECTORY_SEPARATOR . $cachePath);
+                $isDir = is_dir($report->projectRoot . \DIRECTORY_SEPARATOR . $cachePath);
                 $suffix = $isDir ? '/' : '';
                 $this->line("    \033[31m✗\033[0m {$cachePath}{$suffix}");
             }

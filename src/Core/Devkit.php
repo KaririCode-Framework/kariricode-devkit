@@ -58,7 +58,7 @@ final class Devkit
     public function context(string $workingDirectory = '.'): ProjectContext
     {
         return $this->context ??= $this->detector->detect(
-            \realpath($workingDirectory) ?: $workingDirectory,
+            realpath($workingDirectory) ?: $workingDirectory,
         );
     }
 
@@ -76,11 +76,11 @@ final class Devkit
             $path = $ctx->configPath($generator->outputPath());
 
             $dir = \dirname($path);
-            if (!\is_dir($dir)) {
-                \mkdir($dir, 0755, true);
+            if (! is_dir($dir)) {
+                mkdir($dir, 0o755, true);
             }
 
-            \file_put_contents($path, $generator->generate($ctx));
+            file_put_contents($path, $generator->generate($ctx));
             ++$count;
         }
 
@@ -100,7 +100,7 @@ final class Devkit
             throw new DevkitException(\sprintf(
                 'Unknown tool "%s". Available: %s',
                 $toolName,
-                \implode(', ', \array_keys($this->runners)),
+                implode(', ', array_keys($this->runners)),
             ));
         }
 
@@ -131,14 +131,14 @@ final class Devkit
         $results = [];
 
         foreach ($pipeline as $tool) {
-            if (!$this->isToolAvailable($tool)) {
+            if (! $this->isToolAvailable($tool)) {
                 continue;
             }
 
             $extraArgs = match ($tool) {
                 'cs-fixer' => ['--dry-run', '--diff'],
-                'rector'   => ['--dry-run'],
-                default    => [],
+                'rector' => ['--dry-run'],
+                default => [],
             };
 
             $results[] = $this->run($tool, $extraArgs);
@@ -153,17 +153,17 @@ final class Devkit
     {
         $buildDir = $this->context($workingDirectory)->buildDir;
 
-        if (\is_dir($buildDir)) {
+        if (is_dir($buildDir)) {
             $this->removeRecursive($buildDir);
         }
 
-        \mkdir($buildDir, 0755, true);
+        mkdir($buildDir, 0o755, true);
     }
 
     /** @return list<string> */
     public function registeredTools(): array
     {
-        return \array_keys($this->runners);
+        return array_keys($this->runners);
     }
 
     // ── Internals ─────────────────────────────────────────────────
@@ -171,7 +171,7 @@ final class Devkit
     private function ensureDirectories(ProjectContext $ctx): void
     {
         foreach ([$ctx->devkitDir, $ctx->buildDir] as $dir) {
-            if (!\is_dir($dir) && !\mkdir($dir, 0755, true)) {
+            if (! is_dir($dir) && ! mkdir($dir, 0o755, true)) {
                 throw DevkitException::directoryNotWritable($dir);
             }
         }
@@ -183,8 +183,8 @@ final class Devkit
         $entry = '.kcode/';
 
         // Create .gitignore if it doesn't exist
-        if (!\is_file($gitignore)) {
-            \file_put_contents(
+        if (! is_file($gitignore)) {
+            file_put_contents(
                 $gitignore,
                 '# KaririCode Devkit — generated configs and build artifacts' . \PHP_EOL
                 . $entry . \PHP_EOL,
@@ -193,23 +193,27 @@ final class Devkit
             return;
         }
 
-        $content = \file_get_contents($gitignore);
+        $content = file_get_contents($gitignore);
+
+        if (false === $content) {
+            return;
+        }
 
         // Already covered
-        if (\str_contains($content, $entry)) {
+        if (str_contains($content, $entry)) {
             return;
         }
 
         // Migrate: if old .kcode/build/ entry exists, replace with .kcode/
         $legacyEntry = '.kcode/build/';
-        if (\str_contains($content, $legacyEntry)) {
-            $content = \str_replace($legacyEntry, $entry, $content);
-            \file_put_contents($gitignore, $content);
+        if (str_contains($content, $legacyEntry)) {
+            $content = str_replace($legacyEntry, $entry, $content);
+            file_put_contents($gitignore, $content);
 
             return;
         }
 
-        \file_put_contents(
+        file_put_contents(
             $gitignore,
             \PHP_EOL . '# KaririCode Devkit — generated configs and build artifacts' . \PHP_EOL
             . $entry . \PHP_EOL,
@@ -225,9 +229,10 @@ final class Devkit
         );
 
         foreach ($items as $item) {
-            $item->isDir() ? \rmdir($item->getPathname()) : \unlink($item->getPathname());
+            /** @var \SplFileInfo $item */
+            $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
         }
 
-        \rmdir($dir);
+        rmdir($dir);
     }
 }

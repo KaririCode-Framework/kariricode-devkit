@@ -13,16 +13,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class CsFixerRunner extends AbstractToolRunner
 {
+    #[\Override]
     public function toolName(): string
     {
         return 'cs-fixer';
     }
 
+    #[\Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/php-cs-fixer';
     }
 
+    #[\Override]
     protected function defaultArguments(): array
     {
         return [

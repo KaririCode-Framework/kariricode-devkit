@@ -15,6 +15,7 @@ namespace KaririCode\Devkit\Core;
 final readonly class ProjectContext
 {
     public string $devkitDir;
+
     public string $buildDir;
 
     /**
@@ -62,21 +63,21 @@ final readonly class ProjectContext
     /** @return list<string> Convert absolute source dirs to project-relative paths. */
     public function relativeSourceDirs(): array
     {
-        return \array_map(fn (string $dir): string => $this->relativize($dir), $this->sourceDirs);
+        return array_map(fn (string $dir): string => $this->relativize($dir), $this->sourceDirs);
     }
 
     /** @return list<string> Convert absolute test dirs to project-relative paths. */
     public function relativeTestDirs(): array
     {
-        return \array_map(fn (string $dir): string => $this->relativize($dir), $this->testDirs);
+        return array_map(fn (string $dir): string => $this->relativize($dir), $this->testDirs);
     }
 
     public function relativize(string $absolutePath): string
     {
         $prefix = $this->projectRoot . \DIRECTORY_SEPARATOR;
 
-        return \str_starts_with($absolutePath, $prefix)
-            ? \substr($absolutePath, \strlen($prefix))
+        return str_starts_with($absolutePath, $prefix)
+            ? substr($absolutePath, \strlen($prefix))
             : $absolutePath;
     }
 }

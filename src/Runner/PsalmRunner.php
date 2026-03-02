@@ -11,16 +11,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class PsalmRunner extends AbstractToolRunner
 {
+    #[\Override]
     public function toolName(): string
     {
         return 'psalm';
     }
 
+    #[\Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/psalm';
     }
 
+    #[\Override]
     protected function defaultArguments(): array
     {
         return [

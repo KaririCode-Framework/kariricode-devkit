@@ -11,16 +11,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class PhpUnitRunner extends AbstractToolRunner
 {
+    #[\Override]
     public function toolName(): string
     {
         return 'phpunit';
     }
 
+    #[\Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/phpunit';
     }
 
+    #[\Override]
     protected function defaultArguments(): array
     {
         return [

@@ -15,16 +15,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class TestCommand extends AbstractCommand
 {
+    #[\Override]
     public function name(): string
     {
         return 'test';
     }
 
+    #[\Override]
     public function description(): string
     {
         return 'Run PHPUnit tests';
     }
 
+    #[\Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Test');
@@ -45,9 +48,9 @@ final class TestCommand extends AbstractCommand
         $passthrough = $this->passthrough($arguments, ['--coverage']);
 
         // Strip consumed --suite=X option (prefix match, not exact)
-        $passthrough = \array_values(\array_filter(
+        $passthrough = array_values(array_filter(
             $passthrough,
-            static fn (string $arg): bool => !\str_starts_with($arg, '--suite='),
+            static fn (string $arg): bool => ! str_starts_with($arg, '--suite='),
         ));
 
         $allArgs = [...$extraArgs, ...$passthrough];

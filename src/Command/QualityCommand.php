@@ -14,16 +14,19 @@ use KaririCode\Devkit\ValueObject\ToolResult;
  */
 final class QualityCommand extends AbstractCommand
 {
+    #[\Override]
     public function name(): string
     {
         return 'quality';
     }
 
+    #[\Override]
     public function description(): string
     {
         return 'Full pipeline: cs:check → analyse → test';
     }
 
+    #[\Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Quality Pipeline');

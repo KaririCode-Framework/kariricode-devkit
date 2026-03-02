@@ -33,9 +33,9 @@ final readonly class ProcessExecutor
      */
     public function execute(string $toolName, array $command): ToolResult
     {
-        $start = \hrtime(true);
+        $start = hrtime(true);
 
-        $process = \proc_open(
+        $process = proc_open(
             $command,
             [
                 0 => ['pipe', 'r'],
@@ -46,33 +46,33 @@ final readonly class ProcessExecutor
             $this->workingDirectory,
         );
 
-        if (!\is_resource($process)) {
+        if (! \is_resource($process)) {
             return new ToolResult(
                 toolName: $toolName,
                 exitCode: 127,
                 stdout: '',
-                stderr: 'Failed to spawn process: ' . \implode(' ', $command),
+                stderr: 'Failed to spawn process: ' . implode(' ', $command),
                 elapsedSeconds: 0.0,
             );
         }
 
-        \fclose($pipes[0]);
+        fclose($pipes[0]);
 
-        $stdout = (string) \stream_get_contents($pipes[1]);
-        $stderr = (string) \stream_get_contents($pipes[2]);
+        $stdout = (string) stream_get_contents($pipes[1]);
+        $stderr = (string) stream_get_contents($pipes[2]);
 
-        \fclose($pipes[1]);
-        \fclose($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
 
-        $exitCode = \proc_close($process);
-        $elapsed = (\hrtime(true) - $start) / 1_000_000_000;
+        $exitCode = proc_close($process);
+        $elapsed = (hrtime(true) - $start) / 1_000_000_000;
 
         return new ToolResult(
             toolName: $toolName,
             exitCode: $exitCode,
             stdout: $stdout,
             stderr: $stderr,
-            elapsedSeconds: \round($elapsed, 3),
+            elapsedSeconds: round($elapsed, 3),
         );
     }
 
@@ -86,21 +86,21 @@ final readonly class ProcessExecutor
         // Tier 1: PHAR-internal binary
         if ('' !== \Phar::running(false)) {
             $pharBin = \Phar::running(true) . '/' . $vendorBin;
-            if (\file_exists($pharBin)) {
+            if (file_exists($pharBin)) {
                 return $pharBin;
             }
         }
 
         // Tier 2: Project-local vendor binary
         $localBin = $this->workingDirectory . '/' . $vendorBin;
-        if (\is_file($localBin) && \is_executable($localBin)) {
+        if (is_file($localBin) && is_executable($localBin)) {
             return $localBin;
         }
 
         // Tier 3: Global PATH
-        $basename = \basename($vendorBin);
-        $globalBin = \trim((string) \shell_exec('command -v ' . \escapeshellarg($basename) . ' 2>/dev/null'));
-        if ('' !== $globalBin && \is_executable($globalBin)) {
+        $basename = basename($vendorBin);
+        $globalBin = trim((string) shell_exec('command -v ' . escapeshellarg($basename) . ' 2>/dev/null'));
+        if ('' !== $globalBin && is_executable($globalBin)) {
             return $globalBin;
         }
 

@@ -22,7 +22,7 @@ final class ToolException extends DevkitException
     public static function executionFailed(string $tool, int $exitCode, string $output): self
     {
         return new self(
-            \sprintf('Tool "%s" exited with code %d: %s', $tool, $exitCode, \trim($output) ?: '(no output)'),
+            \sprintf('Tool "%s" exited with code %d: %s', $tool, $exitCode, trim($output) ?: '(no output)'),
             $exitCode,
         );
     }

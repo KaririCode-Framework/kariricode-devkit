@@ -13,6 +13,7 @@ namespace KaririCode\Devkit\ValueObject;
 final readonly class MigrationReport
 {
     public bool $hasRedundancies;
+
     public int $totalItems;
 
     /**
@@ -55,11 +56,11 @@ final readonly class MigrationReport
         foreach ([...$this->redundantConfigFiles, ...$this->redundantCachePaths] as $relative) {
             $fullPath = $this->projectRoot . \DIRECTORY_SEPARATOR . $relative;
 
-            if (\is_dir($fullPath)) {
+            if (is_dir($fullPath)) {
                 $this->removeRecursive($fullPath);
                 ++$removed;
-            } elseif (\is_file($fullPath)) {
-                \unlink($fullPath);
+            } elseif (is_file($fullPath)) {
+                unlink($fullPath);
                 ++$removed;
             }
         }
@@ -78,18 +79,27 @@ final readonly class MigrationReport
     {
         $composerPath = $this->projectRoot . \DIRECTORY_SEPARATOR . 'composer.json';
 
-        if (!\is_file($composerPath)) {
+        if (! is_file($composerPath)) {
             return [];
         }
 
-        $raw = \file_get_contents($composerPath);
-        $composer = \json_decode($raw, true, 512, \JSON_THROW_ON_ERROR);
+        $raw = file_get_contents($composerPath);
+
+        if (false === $raw) {
+            return [];
+        }
+
+        /** @var array<string, mixed> $composer */
+        $composer = json_decode($raw, true, 512, \JSON_THROW_ON_ERROR);
 
         $removed = [];
 
-        foreach (\array_keys($this->redundantPackages) as $package) {
-            if (isset($composer['require-dev'][$package])) {
-                unset($composer['require-dev'][$package]);
+        /** @var array<string, string> $requireDev */
+        $requireDev = \is_array($composer['require-dev'] ?? null) ? $composer['require-dev'] : [];
+
+        foreach (array_keys($this->redundantPackages) as $package) {
+            if (isset($requireDev[$package])) {
+                unset($requireDev[$package]);
                 $removed[] = $package;
             }
         }
@@ -98,20 +108,29 @@ final readonly class MigrationReport
             return [];
         }
 
-        // Remove empty require-dev section entirely
-        if (isset($composer['require-dev']) && [] === $composer['require-dev']) {
+        // Write back the updated require-dev (or remove the key if empty)
+        if ([] === $requireDev) {
             unset($composer['require-dev']);
+        } else {
+            $composer['require-dev'] = $requireDev;
         }
 
-        // Detect indentation from original file (4 spaces or tab)
-        $indent = \str_contains($raw, "\t") ? \JSON_PRETTY_PRINT : \JSON_PRETTY_PRINT;
+        // Detect indentation: 4-space (default) or tab
+        $jsonFlags = \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE;
+        $encoded = json_encode($composer, $jsonFlags);
 
-        \file_put_contents(
+        if (false === $encoded) {
+            return [];
+        }
+
+        // Re-apply tab indentation if original used tabs
+        if (str_contains($raw, "\t")) {
+            $encoded = str_replace('    ', "\t", $encoded);
+        }
+
+        file_put_contents(
             $composerPath,
-            \json_encode(
-                $composer,
-                \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE,
-            ) . \PHP_EOL,
+            $encoded . \PHP_EOL,
         );
 
         return $removed;
@@ -125,9 +144,10 @@ final readonly class MigrationReport
         );
 
         foreach ($items as $item) {
-            $item->isDir() ? \rmdir($item->getPathname()) : \unlink($item->getPathname());
+            /** @var \SplFileInfo $item */
+            $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
         }
 
-        \rmdir($dir);
+        rmdir($dir);
     }
 }

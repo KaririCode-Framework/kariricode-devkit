@@ -56,25 +56,26 @@ final readonly class DevkitConfig
     {
         $configPath = $projectRoot . \DIRECTORY_SEPARATOR . self::CONFIG_FILE;
 
-        if (!\is_file($configPath)) {
+        if (! is_file($configPath)) {
             $this->overrides = [];
 
             return;
         }
 
-        if (!\is_readable($configPath)) {
+        if (! is_readable($configPath)) {
             throw ConfigurationException::fileNotReadable($configPath);
         }
 
         $loaded = require $configPath;
 
-        if (!\is_array($loaded)) {
+        if (! \is_array($loaded)) {
             throw ConfigurationException::invalidOverride(
                 self::CONFIG_FILE,
                 'Must return an array.',
             );
         }
 
+        /** @var array<string, mixed> $loaded */
         $this->overrides = $loaded;
     }
 
@@ -87,7 +88,7 @@ final readonly class DevkitConfig
      */
     public function get(string $key, mixed $default): mixed
     {
-        if (!\array_key_exists($key, $this->overrides)) {
+        if (! \array_key_exists($key, $this->overrides)) {
             return $default;
         }
 
@@ -109,7 +110,17 @@ final readonly class DevkitConfig
     {
         $tools = $this->overrides['tools'] ?? [];
 
-        return \is_array($tools) ? $tools : [];
+        if (! \is_array($tools)) {
+            return [];
+        }
+
+        /** @var array<string, string> $typed */
+        $typed = array_filter(
+            $tools,
+            static fn (mixed $v): bool => \is_string($v),
+        );
+
+        return $typed;
     }
 
     public function hasOverrides(): bool

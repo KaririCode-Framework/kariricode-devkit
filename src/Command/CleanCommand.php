@@ -13,16 +13,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class CleanCommand extends AbstractCommand
 {
+    #[\Override]
     public function name(): string
     {
         return 'clean';
     }
 
+    #[\Override]
     public function description(): string
     {
         return 'Remove .kcode/build/ (caches, coverage, reports)';
     }
 
+    #[\Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Clean');

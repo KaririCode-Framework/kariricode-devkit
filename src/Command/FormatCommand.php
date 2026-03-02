@@ -13,16 +13,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class FormatCommand extends AbstractCommand
 {
+    #[\Override]
     public function name(): string
     {
         return 'format';
     }
 
+    #[\Override]
     public function description(): string
     {
         return 'Apply all formatting (cs:fix + rector --fix)';
     }
 
+    #[\Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Format');
@@ -55,7 +58,7 @@ final class FormatCommand extends AbstractCommand
                 $this->info(\sprintf('Rector done (%.2fs)', $result->elapsedSeconds));
             } else {
                 $this->error(\sprintf('Rector failed (%.2fs)', $result->elapsedSeconds));
-                $exitCode = \max($exitCode, $result->exitCode);
+                $exitCode = max($exitCode, $result->exitCode);
             }
         }
 

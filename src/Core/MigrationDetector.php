@@ -60,19 +60,25 @@ final class MigrationDetector
         $redundantCachePaths = [];
 
         // Scan composer.json require-dev
-        if (\is_file($composerPath)) {
-            $composer = \json_decode(
-                \file_get_contents($composerPath),
-                true,
-                512,
-                \JSON_THROW_ON_ERROR,
-            );
+        if (is_file($composerPath)) {
+            $raw = file_get_contents($composerPath);
 
-            $requireDev = $composer['require-dev'] ?? [];
+            if (false !== $raw) {
+                /** @var array<string, mixed> $composer */
+                $composer = json_decode(
+                    $raw,
+                    true,
+                    512,
+                    \JSON_THROW_ON_ERROR,
+                );
 
-            foreach (self::REPLACED_PACKAGES as $package) {
-                if (\array_key_exists($package, $requireDev)) {
-                    $redundantPackages[$package] = $requireDev[$package];
+                /** @var array<string, string> $requireDev */
+                $requireDev = $composer['require-dev'] ?? [];
+
+                foreach (self::REPLACED_PACKAGES as $package) {
+                    if (\array_key_exists($package, $requireDev)) {
+                        $redundantPackages[$package] = $requireDev[$package];
+                    }
                 }
             }
         }
@@ -80,7 +86,7 @@ final class MigrationDetector
         // Scan root-level config files
         foreach (self::REPLACED_CONFIG_FILES as $file) {
             $fullPath = $projectRoot . \DIRECTORY_SEPARATOR . $file;
-            if (\is_file($fullPath)) {
+            if (is_file($fullPath)) {
                 $redundantConfigFiles[] = $file;
             }
         }
@@ -88,7 +94,7 @@ final class MigrationDetector
         // Scan root-level cache paths
         foreach (self::REPLACED_CACHE_PATHS as $cachePath) {
             $fullPath = $projectRoot . \DIRECTORY_SEPARATOR . $cachePath;
-            if (\file_exists($fullPath)) {
+            if (file_exists($fullPath)) {
                 $redundantCachePaths[] = $cachePath;
             }
         }

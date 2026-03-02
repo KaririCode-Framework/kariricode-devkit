@@ -36,12 +36,14 @@ abstract class AbstractToolRunner implements ToolRunner
      */
     abstract protected function defaultArguments(): array;
 
+    #[\Override]
     public function isAvailable(): bool
     {
         return null !== $this->binary();
     }
 
     /** @param list<string> $arguments */
+    #[\Override]
     public function run(array $arguments = []): ToolResult
     {
         $binary = $this->binary();

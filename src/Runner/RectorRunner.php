@@ -13,16 +13,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class RectorRunner extends AbstractToolRunner
 {
+    #[\Override]
     public function toolName(): string
     {
         return 'rector';
     }
 
+    #[\Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/rector';
     }
 
+    #[\Override]
     protected function defaultArguments(): array
     {
         return [

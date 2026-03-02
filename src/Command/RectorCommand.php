@@ -13,16 +13,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class RectorCommand extends AbstractCommand
 {
+    #[\Override]
     public function name(): string
     {
         return 'rector';
     }
 
+    #[\Override]
     public function description(): string
     {
         return 'Run Rector (--fix to apply changes)';
     }
 
+    #[\Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $apply = $this->hasFlag($arguments, '--fix', '--apply');

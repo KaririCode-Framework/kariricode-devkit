@@ -23,12 +23,19 @@ final class ProjectDetector
     {
         $composerPath = $workingDirectory . \DIRECTORY_SEPARATOR . 'composer.json';
 
-        if (!\is_file($composerPath)) {
+        if (! is_file($composerPath)) {
             throw DevkitException::projectNotDetected($workingDirectory);
         }
 
-        $composer = \json_decode(
-            \file_get_contents($composerPath),
+        $raw = file_get_contents($composerPath);
+
+        if (false === $raw) {
+            throw DevkitException::projectNotDetected($workingDirectory);
+        }
+
+        /** @var array<string, mixed> $composer */
+        $composer = json_decode(
+            $raw,
             true,
             512,
             \JSON_THROW_ON_ERROR,
@@ -37,15 +44,29 @@ final class ProjectDetector
         // Load overrides from project root devkit.php (not from .kcode/)
         $config = new DevkitConfig($workingDirectory);
 
+        /** @var array<string, array<string, string|list<string>>> $autoload */
+        $autoload = \is_array($composer['autoload'] ?? null) ? $composer['autoload'] : [];
+        /** @var array<string, array<string, string|list<string>>> $autoloadDev */
+        $autoloadDev = \is_array($composer['autoload-dev'] ?? null) ? $composer['autoload-dev'] : [];
+
+        /** @var array<string, string|list<string>> $psr4Source */
+        $psr4Source = \is_array($autoload['psr-4'] ?? null) ? $autoload['psr-4'] : [];
+        /** @var array<string, string|list<string>> $psr4Test */
+        $psr4Test = \is_array($autoloadDev['psr-4'] ?? null) ? $autoloadDev['psr-4'] : [];
+
         $sourceDirs = $config->get('source_dirs', null)
-            ?? $this->detectPsr4Dirs($workingDirectory, $composer['autoload']['psr-4'] ?? [], ['src']);
+            ?? $this->detectPsr4Dirs($workingDirectory, $psr4Source, ['src']);
 
         $testDirs = $config->get('test_dirs', null)
-            ?? $this->detectPsr4Dirs($workingDirectory, $composer['autoload-dev']['psr-4'] ?? [], ['tests']);
+            ?? $this->detectPsr4Dirs($workingDirectory, $psr4Test, ['tests']);
+
+        $projectName = isset($composer['name']) && \is_string($composer['name'])
+            ? $composer['name']
+            : basename($workingDirectory);
 
         return new ProjectContext(
             projectRoot: $workingDirectory,
-            projectName: $config->get('project_name', $composer['name'] ?? \basename($workingDirectory)),
+            projectName: $config->get('project_name', $projectName),
             namespace: $config->get('namespace', $this->detectNamespace($composer)),
             phpVersion: $config->get('php_version', $this->detectPhpVersion($composer)),
             phpstanLevel: $config->get('phpstan_level', 9),
@@ -55,7 +76,7 @@ final class ProjectDetector
             excludeDirs: $config->get('exclude_dirs', ['src/Contract']),
             testSuites: $config->get('test_suites', $this->detectTestSuites($workingDirectory, $testDirs)),
             coverageExclude: $config->get('coverage_exclude', ['src/Exception']),
-            csFixerRules: \array_merge(self::DEFAULT_CS_RULES, $config->get('cs_fixer_rules', [])),
+            csFixerRules: array_merge(self::DEFAULT_CS_RULES, $config->get('cs_fixer_rules', [])),
             rectorSets: $config->get('rector_sets', self::DEFAULT_RECTOR_SETS),
             toolVersions: $config->toolVersions(),
         );
@@ -63,23 +84,32 @@ final class ProjectDetector
 
     // ── Detection helpers ─────────────────────────────────────────
 
+    /** @param array<string, mixed> $composer */
     private function detectNamespace(array $composer): string
     {
-        foreach ($composer['autoload']['psr-4'] ?? [] as $ns => $path) {
-            return \rtrim($ns, '\\');
+        $autoload = \is_array($composer['autoload'] ?? null) ? $composer['autoload'] : [];
+
+        /** @var array<string, string|list<string>> $psr4 */
+        $psr4 = \is_array($autoload['psr-4'] ?? null) ? $autoload['psr-4'] : [];
+
+        foreach ($psr4 as $ns => $path) {
+            return rtrim((string) $ns, '\\');
         }
 
         return 'App';
     }
 
+    /** @param array<string, mixed> $composer */
     private function detectPhpVersion(array $composer): string
     {
-        $constraint = $composer['require']['php'] ?? '^8.4';
+        $require = \is_array($composer['require'] ?? null) ? $composer['require'] : [];
+        $constraint = \is_string($require['php'] ?? null) ? $require['php'] : '^8.4';
 
-        return \preg_match('/(\d+\.\d+)/', $constraint, $m) ? $m[1] : '8.4';
+        return preg_match('/(\d+\.\d+)/', $constraint, $m) ? $m[1] : '8.4';
     }
 
     /**
+     * @param array<string, string|list<string>> $psr4Map
      * @param list<string> $fallbackDirs Context-aware fallback directories.
      * @return list<string> Absolute paths
      */
@@ -89,8 +119,8 @@ final class ProjectDetector
 
         foreach ($psr4Map as $paths) {
             foreach ((array) $paths as $path) {
-                $absolute = $root . \DIRECTORY_SEPARATOR . \rtrim($path, '/');
-                if (\is_dir($absolute)) {
+                $absolute = $root . \DIRECTORY_SEPARATOR . rtrim((string) $path, '/');
+                if (is_dir($absolute)) {
                     $dirs[] = $absolute;
                 }
             }
@@ -100,7 +130,7 @@ final class ProjectDetector
         if ([] === $dirs) {
             foreach ($fallbackDirs as $fallback) {
                 $candidate = $root . \DIRECTORY_SEPARATOR . $fallback;
-                if (\is_dir($candidate)) {
+                if (is_dir($candidate)) {
                     $dirs[] = $candidate;
 
                     break;
@@ -111,7 +141,10 @@ final class ProjectDetector
         return $dirs;
     }
 
-    /** @return array<string, string> Suite name → relative path */
+    /**
+     * @param list<string> $testDirs
+     * @return array<string, string> Suite name → relative path
+     */
     private function detectTestSuites(string $root, array $testDirs): array
     {
         $suites = [];
@@ -120,8 +153,8 @@ final class ProjectDetector
         foreach ($testDirs as $testDir) {
             foreach ($standard as $suite) {
                 $candidate = $testDir . \DIRECTORY_SEPARATOR . $suite;
-                if (\is_dir($candidate)) {
-                    $relative = \str_replace($root . \DIRECTORY_SEPARATOR, '', $candidate);
+                if (is_dir($candidate)) {
+                    $relative = str_replace($root . \DIRECTORY_SEPARATOR, '', $candidate);
                     $suites[$suite] = $relative;
                 }
             }
@@ -129,7 +162,7 @@ final class ProjectDetector
 
         // If nothing detected, register full test dir
         if ([] === $suites && [] !== $testDirs) {
-            $relative = \str_replace($root . \DIRECTORY_SEPARATOR, '', $testDirs[0]);
+            $relative = str_replace($root . \DIRECTORY_SEPARATOR, '', $testDirs[0]);
             $suites['Default'] = $relative;
         }
 

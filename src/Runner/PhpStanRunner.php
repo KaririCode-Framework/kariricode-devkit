@@ -11,16 +11,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class PhpStanRunner extends AbstractToolRunner
 {
+    #[\Override]
     public function toolName(): string
     {
         return 'phpstan';
     }
 
+    #[\Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/phpstan';
     }
 
+    #[\Override]
     protected function defaultArguments(): array
     {
         return [

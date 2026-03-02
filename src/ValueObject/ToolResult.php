@@ -25,7 +25,7 @@ final readonly class ToolResult
 
     public function output(): string
     {
-        $combined = \trim($this->stdout . "\n" . $this->stderr);
+        $combined = trim($this->stdout . "\n" . $this->stderr);
 
         return '' !== $combined ? $combined : '(no output)';
     }

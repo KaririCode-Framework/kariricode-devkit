@@ -14,16 +14,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class ComposerAuditRunner extends AbstractToolRunner
 {
+    #[\Override]
     public function toolName(): string
     {
         return 'composer-audit';
     }
 
+    #[\Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/composer';
     }
 
+    #[\Override]
     protected function defaultArguments(): array
     {
         return ['audit', '--format=plain', '--ansi'];
@@ -33,11 +36,12 @@ final class ComposerAuditRunner extends AbstractToolRunner
      * Composer is typically global — override binary resolution
      * to prefer global `composer` before vendor path.
      */
+    #[\Override]
     protected function binary(): ?string
     {
-        $global = \trim((string) \shell_exec('command -v ' . \escapeshellarg('composer') . ' 2>/dev/null'));
+        $global = trim((string) shell_exec('command -v ' . escapeshellarg('composer') . ' 2>/dev/null'));
 
-        if ('' !== $global && \is_executable($global)) {
+        if ('' !== $global && is_executable($global)) {
             return $global;
         }
 

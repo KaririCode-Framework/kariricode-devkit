@@ -24,27 +24,27 @@ abstract class AbstractCommand
 
     protected function info(string $message): void
     {
-        \fwrite(\STDOUT, "\033[32m✓\033[0m {$message}" . \PHP_EOL);
+        fwrite(\STDOUT, "\033[32m✓\033[0m {$message}" . \PHP_EOL);
     }
 
     protected function warning(string $message): void
     {
-        \fwrite(\STDOUT, "\033[33m⚠\033[0m {$message}" . \PHP_EOL);
+        fwrite(\STDOUT, "\033[33m⚠\033[0m {$message}" . \PHP_EOL);
     }
 
     protected function error(string $message): void
     {
-        \fwrite(\STDERR, "\033[31m✗\033[0m {$message}" . \PHP_EOL);
+        fwrite(\STDERR, "\033[31m✗\033[0m {$message}" . \PHP_EOL);
     }
 
     protected function line(string $message = ''): void
     {
-        \fwrite(\STDOUT, $message . \PHP_EOL);
+        fwrite(\STDOUT, $message . \PHP_EOL);
     }
 
     protected function banner(string $title): void
     {
-        $ruler = \str_repeat('─', 60);
+        $ruler = str_repeat('─', 60);
         $this->line("\033[36m{$ruler}\033[0m");
         $this->line("\033[1m  {$title}\033[0m");
         $this->line("\033[36m{$ruler}\033[0m");
@@ -65,15 +65,15 @@ abstract class AbstractCommand
     protected function confirm(string $question, bool $default = false): bool
     {
         $hint = $default ? '[Y/n]' : '[y/N]';
-        \fwrite(\STDOUT, "\033[33m?\033[0m {$question} {$hint} ");
+        fwrite(\STDOUT, "\033[33m?\033[0m {$question} {$hint} ");
 
-        $input = \trim((string) \fgets(\STDIN));
+        $input = trim((string) fgets(\STDIN));
 
         if ('' === $input) {
             return $default;
         }
 
-        return \in_array(\strtolower($input), ['y', 'yes', 'sim', 's'], true);
+        return \in_array(strtolower($input), ['y', 'yes', 'sim', 's'], true);
     }
 
     // ── Argument Helpers ──────────────────────────────────────────
@@ -100,8 +100,8 @@ abstract class AbstractCommand
         $prefix = "--{$key}=";
 
         foreach ($arguments as $arg) {
-            if (\str_starts_with($arg, $prefix)) {
-                return \substr($arg, \strlen($prefix));
+            if (str_starts_with($arg, $prefix)) {
+                return substr($arg, \strlen($prefix));
             }
         }
 
@@ -116,9 +116,9 @@ abstract class AbstractCommand
      */
     protected function positional(array $arguments): array
     {
-        return \array_values(\array_filter(
+        return array_values(array_filter(
             $arguments,
-            static fn (string $arg): bool => !\str_starts_with($arg, '--'),
+            static fn (string $arg): bool => ! str_starts_with($arg, '--'),
         ));
     }
 
@@ -131,9 +131,9 @@ abstract class AbstractCommand
      */
     protected function passthrough(array $arguments, array $consume = []): array
     {
-        return \array_values(\array_filter(
+        return array_values(array_filter(
             $arguments,
-            static fn (string $arg): bool => !\in_array($arg, $consume, true),
+            static fn (string $arg): bool => ! \in_array($arg, $consume, true),
         ));
     }
 }

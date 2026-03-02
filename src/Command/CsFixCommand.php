@@ -13,16 +13,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class CsFixCommand extends AbstractCommand
 {
+    #[\Override]
     public function name(): string
     {
         return 'cs:fix';
     }
 
+    #[\Override]
     public function description(): string
     {
         return 'Fix code style (--check for dry-run)';
     }
 
+    #[\Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $dryRun = $this->hasFlag($arguments, '--check', '--dry-run');
