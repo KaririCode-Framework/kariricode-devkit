@@ -117,7 +117,7 @@ final readonly class DevkitConfig
         /** @var array<string, string> $typed */
         $typed = array_filter(
             $tools,
-            static fn (mixed $v): bool => \is_string($v),
+            \is_string(...),
         );
 
         return $typed;

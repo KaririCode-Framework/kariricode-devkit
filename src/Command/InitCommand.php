@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
+use KaririCode\Devkit\Core\MigrationDetector;
 
 /**
  * Generates all config files inside `.kcode/`.
@@ -45,11 +46,11 @@ final class InitCommand extends AbstractCommand
 
         // Scaffold devkit.php if requested
         if ($this->hasFlag($arguments, '--config')) {
-            $this->scaffoldDevkitConfig($context->projectRoot, $context);
+            $this->scaffoldDevkitConfig($context->projectRoot);
         }
 
         // Hint: detect redundant root-level configs and dev dependencies
-        $detector = new \KaririCode\Devkit\Core\MigrationDetector();
+        $detector = new MigrationDetector();
         $migration = $detector->detect($context->projectRoot);
 
         if ($migration->hasRedundancies) {
@@ -64,7 +65,7 @@ final class InitCommand extends AbstractCommand
         return 0;
     }
 
-    private function scaffoldDevkitConfig(string $projectRoot, \KaririCode\Devkit\Core\ProjectContext $context): void
+    private function scaffoldDevkitConfig(string $projectRoot): void
     {
         $configPath = $projectRoot . \DIRECTORY_SEPARATOR . 'devkit.php';
 
@@ -74,7 +75,7 @@ final class InitCommand extends AbstractCommand
             return;
         }
 
-        $content = <<<'PHP'
+        $content = <<<'PHP_WRAP'
             <?php
 
             declare(strict_types=1);
@@ -146,7 +147,7 @@ final class InitCommand extends AbstractCommand
                 //     'psalm'        => '^6.0',
                 // ],
             ];
-            PHP;
+            PHP_WRAP;
 
         file_put_contents($configPath, $content . \PHP_EOL);
 

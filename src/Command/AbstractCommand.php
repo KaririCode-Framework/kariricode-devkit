@@ -81,13 +81,7 @@ abstract class AbstractCommand
     /** @param list<string> $arguments */
     protected function hasFlag(array $arguments, string ...$flags): bool
     {
-        foreach ($flags as $flag) {
-            if (\in_array($flag, $arguments, true)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($flags, fn ($flag): bool => \in_array($flag, $arguments, true));
     }
 
     /**

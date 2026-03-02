@@ -12,9 +12,7 @@ namespace KaririCode\Devkit\ValueObject;
 final readonly class QualityReport
 {
     public bool $passed;
-
     public float $totalSeconds;
-
     public int $failureCount;
 
     /** @param list<ToolResult> $results */

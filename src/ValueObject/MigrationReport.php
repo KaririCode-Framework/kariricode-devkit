@@ -13,7 +13,6 @@ namespace KaririCode\Devkit\ValueObject;
 final readonly class MigrationReport
 {
     public bool $hasRedundancies;
-
     public int $totalItems;
 
     /**
