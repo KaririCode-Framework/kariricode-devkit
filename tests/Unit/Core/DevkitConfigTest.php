@@ -18,7 +18,7 @@ final class DevkitConfigTest extends TestCase
     protected function setUp(): void
     {
         $this->tmpDir = sys_get_temp_dir() . '/devkit_config_test_' . uniqid();
-        mkdir($this->tmpDir, 0777, true);
+        mkdir($this->tmpDir, 0o777, true);
     }
 
     protected function tearDown(): void
