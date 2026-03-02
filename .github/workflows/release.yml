@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-phar:
+    name: Build kcode.phar
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: phar, zlib
+          ini-values: phar.readonly=0
+          tools: composer:v2
+
+      - name: Install humbug/box
+        run: |
+          wget -q -O box https://github.com/box-project/box/releases/latest/download/box.phar
+          chmod +x box
+          sudo mv box /usr/local/bin/box
+          box --version
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Compile PHAR
+        run: |
+          php -d phar.readonly=0 box compile --config=box.json
+          ls -lh build/kcode.phar
+
+      - name: Verify PHAR
+        run: |
+          php build/kcode.phar --version
+          php build/kcode.phar --help
+          echo "✓ PHAR verification passed"
+
+      - name: Self-test
+        run: |
+          php build/kcode.phar init
+          php build/kcode.phar migrate --dry-run
+          echo "✓ Self-test passed"
+
+      - name: Extract version from tag
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: KaririCode Devkit ${{ steps.version.outputs.tag }}
+          draft: false
+          prerelease: false
+          files: build/kcode.phar
+          body: |
+            ## Installation
+
+            ### PHAR (standalone)
+            ```bash
+            wget https://github.com/kariricode/devkit/releases/download/${{ steps.version.outputs.tag }}/kcode.phar
+            chmod +x kcode.phar
+            sudo mv kcode.phar /usr/local/bin/kcode
+            ```
+
+            ### Composer
+            ```bash
+            composer require --dev kariricode/devkit
+            ```
+
+            ## Quick Start
+            ```bash
+            kcode init
+            kcode migrate
+            kcode quality
+            ```
+
+            See [CHANGELOG.md](CHANGELOG.md) for details.

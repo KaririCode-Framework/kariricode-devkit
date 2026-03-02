@@ -1,128 +1,48 @@
-# ==============================================================================
-# KaririCode DevKit - .gitignore
-# ==============================================================================
-# Mantém o repositório limpo, rastreando apenas código-fonte e configs relevantes
-# ==============================================================================
-
-# ------------------------------------------------------------------------------
-# Composer / Vendors
-# ------------------------------------------------------------------------------
 /vendor/
-composer.lock
-/composer.phar
-
-# ------------------------------------------------------------------------------
-# Environment Files
-# ------------------------------------------------------------------------------
-.env
-.env.local
-.env.*.local
-/.envrc
-/.envrc.d/
-
-# ------------------------------------------------------------------------------
-# Build / Distribution / Packaging
-# ------------------------------------------------------------------------------
 /build/
-/dist/
-/tmp/
-/var/tmp/
-/*.phar
+/.kcode/
 
-# ------------------------------------------------------------------------------
-# QA & Code Quality Tools
-# ------------------------------------------------------------------------------
 # PHPUnit
 .phpunit.cache/
 .phpunit.result.cache
 /coverage/
 /reports/
 
-# PHPStan
-/.phpstan.cache
-/var/cache/phpstan/
+# CS-Fixer
+.php-cs-fixer.cache
 
-# Psalm
-/.psalm/
-/psalm-baseline.xml
+# PHAR artefacts
+*.phar
 
-# PHP-CS-Fixer
-/.php-cs-fixer.cache
+# composer.lock (library — callers pin versions)
+composer.lock
 
-# Infection (mutation testing)
-/var/cache/infection/
-/infection*.{log,html,md}
-/infection-debug.log
-/infection-summary.log
+# Environment files
+.env
+.env.*.local
 
-# PHPBench
-/.phpbench/
-/benchmarks/
-
-# Rector / PHPMD / CodeSniffer
-/.rector.php
-/.phpcs-cache
-/.phpmd-cache
-/.phpstan-baseline.neon
-/.rector-cache
-
-# ------------------------------------------------------------------------------
-# Logs
-# ------------------------------------------------------------------------------
-/*.log
-/logs/
-/storage/logs/
-/var/log/
-/*.pid
-
-# ------------------------------------------------------------------------------
-# Docker / WSL / CI
-# ------------------------------------------------------------------------------
-/.docker/
-/docker-compose.override.yml
-/.wslconfig
-/.wsl2/
-.cache/
-.dockerignore
-
-# ------------------------------------------------------------------------------
-# IDEs / Editors / OS
-# ------------------------------------------------------------------------------
-# JetBrains / VSCode
-/.idea/
+# IDE
 /.vscode/
+/.idea/
 *.code-workspace
 
-# Vim / Emacs / Misc
-*~
-*.swp
-*.swo
+# Docker/legacy scaffold (not part of this library)
+docker-compose.yml
+docker-compose.override.yml
+.env.example
+.env.xdebug
 
-# macOS / Windows
+# Misc legacy config
+.gitattributes
+.editorconfig
+infection.json
+phpbench.json
+phpcs.xml
+phpmd.xml
+phpstan.neon
+.php-cs-fixer.php
+.rector.php
+
+# OS
 .DS_Store
 Thumbs.db
-Desktop.ini
-
-# ------------------------------------------------------------------------------
-# Node / Frontend (quando integrados ao DevKit)
-# ------------------------------------------------------------------------------
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# ------------------------------------------------------------------------------
-# Backups / Artifacts
-# ------------------------------------------------------------------------------
-*.bak
-*.old
-*.orig
-*.rej
-*.tmp
-
-# ------------------------------------------------------------------------------
-# Cache geral
-# ------------------------------------------------------------------------------
-.cache/
-var/cache/

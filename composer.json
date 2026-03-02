@@ -1,63 +1,74 @@
 {
     "name": "kariricode/devkit",
-    "description": "Professional development environment for KaririCode Framework components",
-    "type": "project",
+    "description": "Unified quality toolchain for KaririCode Framework — encapsulates PHPUnit, PHPStan, PHP-CS-Fixer, Rector, and Psalm in .kcode/",
+    "type": "library",
+    "license": "MIT",
     "keywords": [
         "kariricode",
         "devkit",
-        "development-environment",
-        "docker",
-        "php"
+        "quality",
+        "toolchain",
+        "phpunit",
+        "phpstan",
+        "php-cs-fixer",
+        "rector",
+        "psalm",
+        "static-analysis",
+        "code-style"
     ],
-    "license": "MIT",
+    "homepage": "https://kariricode.org",
     "authors": [
         {
             "name": "Walmir Silva",
-            "email": "walmir.silva@kariricode.org",
-            "homepage": "https://kariricode.org",
-            "role": "Developer"
+            "email": "walmir.silva@kariricode.org"
         }
     ],
-    "homepage": "https://github.com/KaririCode-Framework/kariricode-devkit",
-    "support": {
-        "issues": "https://github.com/KaririCode-Framework/kariricode-devkit/issues",
-        "source": "https://github.com/KaririCode-Framework/kariricode-devkit",
-        "docs": "https://kariricode.org/docs/devkit"
+    "require": {
+        "php": ">=8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.0",
+        "phpstan/phpstan": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "rector/rector": "^2.0",
+        "vimeo/psalm": "^6.0"
     },
     "autoload": {
         "psr-4": {
-            "KaririCode\\DevKit\\": "src/"
+            "KaririCode\\Devkit\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "KaririCode\\DevKit\\Tests\\": "tests/"
+            "KaririCode\\Devkit\\Tests\\": "tests/"
         }
     },
-    "require": {
-        "php": "^8.4"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.89",
-        "infection/infection": "^0.31",
-        "phpbench/phpbench": "^1.3",
-        "phpstan/phpstan": "^2.1",
-        "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^12.4",
-        "squizlabs/php_codesniffer": "^4.0",
-        "symfony/var-dumper": "^7.3",
-        "vimeo/psalm": "^6.13"
+    "bin": [
+        "bin/kcode"
+    ],
+    "scripts": {
+        "kcode:init": "bin/kcode init",
+        "kcode:test": "bin/kcode test",
+        "kcode:analyse": "bin/kcode analyse",
+        "kcode:cs": "bin/kcode cs:fix",
+        "kcode:cs-check": "bin/kcode cs:fix --check",
+        "kcode:quality": "bin/kcode quality",
+        "kcode:migrate": "bin/kcode migrate",
+        "build": "php -d phar.readonly=0 bin/build-phar.php"
     },
     "config": {
         "sort-packages": true,
-        "optimize-autoloader": true,
         "preferred-install": "dist",
+        "optimize-autoloader": true,
         "allow-plugins": {
-            "php-http/discovery": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "infection/extension-installer": true
+            "infection/extension-installer": false
         }
     },
-    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    },
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

@@ -1,0 +1,94 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * KaririCode Devkit CLI — Unified quality toolchain.
+ *
+ * @since 1.0.0
+ */
+
+(static function (array $argv): void {
+    // Autoloader resolution: PHAR → project vendor → global
+    $autoloaderPaths = [
+        // Running from PHAR
+        __DIR__ . '/../vendor/autoload.php',
+        // Installed as project dependency
+        __DIR__ . '/../../../autoload.php',
+    ];
+
+    $autoloader = null;
+
+    foreach ($autoloaderPaths as $path) {
+        if (\is_file($path)) {
+            $autoloader = $path;
+
+            break;
+        }
+    }
+
+    if (null === $autoloader) {
+        \fwrite(\STDERR, "Could not find autoloader. Run 'composer install'." . \PHP_EOL);
+        exit(1);
+    }
+
+    require $autoloader;
+
+    // ── Wire object graph ─────────────────────────────────────────
+
+    $workingDirectory = (string) \getcwd();
+
+    $detector = new \KaririCode\Devkit\Core\ProjectDetector();
+    $devkit = new \KaririCode\Devkit\Core\Devkit($detector);
+
+    // Register config generators
+    $devkit->addGenerator(new \KaririCode\Devkit\Configuration\PhpUnitConfigGenerator());
+    $devkit->addGenerator(new \KaririCode\Devkit\Configuration\PhpStanConfigGenerator());
+    $devkit->addGenerator(new \KaririCode\Devkit\Configuration\CsFixerConfigGenerator());
+    $devkit->addGenerator(new \KaririCode\Devkit\Configuration\RectorConfigGenerator());
+    $devkit->addGenerator(new \KaririCode\Devkit\Configuration\PsalmConfigGenerator());
+
+    // Register tool runners — require ProcessExecutor and ProjectContext
+    $executor = new \KaririCode\Devkit\Core\ProcessExecutor($workingDirectory);
+
+    // Detect project context eagerly — runners need it at registration.
+    // Graceful null when no composer.json found (help/version still work).
+    try {
+        $context = $devkit->context($workingDirectory);
+    } catch (\KaririCode\Devkit\Exception\DevkitException) {
+        // Help and version work without project context.
+        // Commands requiring context will re-detect and throw at execution time.
+        $context = null;
+    }
+
+    if (null !== $context) {
+        $devkit->addRunner(new \KaririCode\Devkit\Runner\PhpUnitRunner($executor, $context));
+        $devkit->addRunner(new \KaririCode\Devkit\Runner\PhpStanRunner($executor, $context));
+        $devkit->addRunner(new \KaririCode\Devkit\Runner\CsFixerRunner($executor, $context));
+        $devkit->addRunner(new \KaririCode\Devkit\Runner\RectorRunner($executor, $context));
+        $devkit->addRunner(new \KaririCode\Devkit\Runner\PsalmRunner($executor, $context));
+        $devkit->addRunner(new \KaririCode\Devkit\Runner\ComposerAuditRunner($executor, $context));
+    }
+
+    // ── Wire CLI commands ─────────────────────────────────────────
+
+    $app = new \KaririCode\Devkit\Command\Application($devkit);
+
+    $app->register(new \KaririCode\Devkit\Command\InitCommand());
+    $app->register(new \KaririCode\Devkit\Command\MigrateCommand(
+        new \KaririCode\Devkit\Core\MigrationDetector(),
+    ));
+    $app->register(new \KaririCode\Devkit\Command\TestCommand());
+    $app->register(new \KaririCode\Devkit\Command\AnalyseCommand());
+    $app->register(new \KaririCode\Devkit\Command\CsFixCommand());
+    $app->register(new \KaririCode\Devkit\Command\RectorCommand());
+    $app->register(new \KaririCode\Devkit\Command\SecurityCommand());
+    $app->register(new \KaririCode\Devkit\Command\QualityCommand());
+    $app->register(new \KaririCode\Devkit\Command\FormatCommand());
+    $app->register(new \KaririCode\Devkit\Command\CleanCommand());
+
+    // ── Dispatch ──────────────────────────────────────────────────
+
+    exit($app->run($argv));
+})($argv ?? []);
