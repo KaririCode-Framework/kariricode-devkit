@@ -8,9 +8,11 @@ use KaririCode\Devkit\ValueObject\QualityReport;
 use KaririCode\Devkit\ValueObject\ToolResult;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(QualityReport::class)]
+#[UsesClass(ToolResult::class)]
 final class QualityReportTest extends TestCase
 {
     private function makeResult(string $name, int $exitCode, float $elapsed = 0.1): ToolResult
