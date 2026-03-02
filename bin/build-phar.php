@@ -32,39 +32,29 @@ foreach ($it as $file) {
 }
 echo "  + src/: $added PHP files\n";
 
-// ── 2. Add vendor/ (PHP files only, no tests/docs) ─────────
-$vendorDir = $root . '/vendor';
-$excludeDirs = ['Tests', 'tests', 'test', 'doc', 'docs', 'examples', '.github'];
-
-$vendorIt = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($vendorDir, FilesystemIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::LEAVES_ONLY
-);
+// ── 2. Add vendor/composer/ autoload files only ────────────
+// No PHP production dependencies — only the generated autoloader is needed.
+$autoloadFiles = [
+    'vendor/autoload.php',
+    'vendor/composer/autoload_classmap.php',
+    'vendor/composer/autoload_namespaces.php',
+    'vendor/composer/autoload_psr4.php',
+    'vendor/composer/autoload_real.php',
+    'vendor/composer/autoload_static.php',
+    'vendor/composer/ClassLoader.php',
+    'vendor/composer/platform_check.php',
+];
 
 $vendorAdded = 0;
-foreach ($vendorIt as $file) {
-    if (!$file->isFile()) continue;
-    $path = $file->getPathname();
-    
-    // Skip test/doc directories
-    $skip = false;
-    foreach ($excludeDirs as $ex) {
-        if (str_contains($path, DIRECTORY_SEPARATOR . $ex . DIRECTORY_SEPARATOR)) {
-            $skip = true;
-            break;
-        }
+foreach ($autoloadFiles as $rel) {
+    $abs = $root . '/' . $rel;
+    if (file_exists($abs)) {
+        $phar[$rel] = file_get_contents($abs);
+        $vendorAdded++;
     }
-    if ($skip) continue;
-
-    // Only PHP and JSON files
-    $ext = $file->getExtension();
-    if (!in_array($ext, ['php', 'json'], true)) continue;
-
-    $relative = 'vendor/' . substr($path, strlen($vendorDir) + 1);
-    $phar[$relative] = file_get_contents($path);
-    $vendorAdded++;
 }
-echo "  + vendor/: $vendorAdded files\n";
+echo "  + vendor/composer/: $vendorAdded autoload files\n";
+
 
 // ── 3. Add LICENSE ──────────────────────────────────────────
 $phar['LICENSE'] = file_get_contents($root . '/LICENSE');
