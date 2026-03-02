@@ -57,7 +57,7 @@ jobs:
 
             ### PHAR (standalone)
             ```bash
-            wget https://github.com/kariricode/devkit/releases/download/${{ steps.version.outputs.tag }}/kcode.phar
+            wget https://github.com/KaririCode-Framework/kariricode-devkit/releases/download/${{ steps.version.outputs.tag }}/kcode.phar
             chmod +x kcode.phar
             sudo mv kcode.phar /usr/local/bin/kcode
             ```
