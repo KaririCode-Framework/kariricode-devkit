@@ -66,7 +66,7 @@ final class MigrationReportTest extends TestCase
     public function removeFilesDeletesExistingFiles(): void
     {
         $tmpDir = sys_get_temp_dir() . '/devkit_test_' . uniqid();
-        mkdir($tmpDir, 0777, true);
+        mkdir($tmpDir, 0o777, true);
 
         $fileToRemove = $tmpDir . '/phpstan.neon';
         file_put_contents($fileToRemove, 'parameters:');
