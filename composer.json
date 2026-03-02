@@ -27,7 +27,7 @@
         "php": ">=8.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.0",
+        "phpunit/phpunit": "^12.0",
         "phpstan/phpstan": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.64",
         "rector/rector": "^2.0",
@@ -47,19 +47,22 @@
         "bin/kcode"
     ],
     "scripts": {
-        "init": "bin/kcode init",
-        "test": "bin/kcode test",
-        "analyse": "bin/kcode analyse",
-        "cs:fix": "bin/kcode cs:fix",
-        "cs:check": "bin/kcode cs:fix --check",
-        "quality": "bin/kcode quality",
-        "migrate": "bin/kcode migrate",
+        "kcode:init": "bin/kcode init",
+        "kcode:test": "bin/kcode test",
+        "kcode:analyse": "bin/kcode analyse",
+        "kcode:cs": "bin/kcode cs:fix",
+        "kcode:cs-check": "bin/kcode cs:fix --check",
+        "kcode:quality": "bin/kcode quality",
+        "kcode:migrate": "bin/kcode migrate",
         "build": "php -d phar.readonly=0 box compile --config=box.json"
     },
     "config": {
         "sort-packages": true,
         "preferred-install": "dist",
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "infection/extension-installer": false
+        }
     },
     "extra": {
         "branch-alias": {
