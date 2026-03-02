@@ -1,280 +1,68 @@
-name: CI Pipeline
+name: CI
 
 on:
-    push:
-        branches:
-            - main
-            - develop
-            - feature/*
-    pull_request:
-        branches:
-            - main
-            - develop
-    schedule:
-        # Run daily at 2 AM UTC
-        - cron: "0 2 * * *"
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-    # ============================================================================
-    # TEST JOB - Run tests across multiple PHP versions
-    # ============================================================================
-    test:
-        name: Tests (PHP ${{ matrix.php }})
-        runs-on: ubuntu-latest
-        permissions:
-            # Required for codecov/codecov-action to get an OIDC token.
-            id-token: write
-            # Required for actions/checkout to fetch code.
-            contents: read
+  quality:
+    name: Quality Pipeline
+    runs-on: ubuntu-latest
 
-        strategy:
-            fail-fast: false
-            matrix:
-                php:
-                    - "8.4"
-                    - "8.3"
-                include:
-                    - php: "8.4"
-                      coverage: true
+    steps:
+      - uses: actions/checkout@v4
 
-        services:
-            redis:
-                image: redis:7-alpine
-                ports:
-                    - 6379:6379
-                options: >-
-                    --health-cmd "redis-cli ping"
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: pcov
 
-            memcached:
-                image: memcached:1.6-alpine
-                ports:
-                    - 11211:11211
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+      - name: Initialize devkit
+        run: vendor/bin/kcode init
 
-            - name: Setup PHP ${{ matrix.php }}
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php }}
-                  extensions: redis, memcached, mbstring, xml, ctype, json, tokenizer, opcache
-                  coverage: xdebug
-                  tools: composer:v2
-              env:
-                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Code style check
+        run: vendor/bin/kcode cs:fix --check
 
-            - name: Get Composer cache directory
-              id: composer-cache
-              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Static analysis
+        run: vendor/bin/kcode analyse
 
-            - name: Cache Composer dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-composer-
+      - name: Tests
+        run: vendor/bin/kcode test --coverage
 
-            - name: Validate composer.json and composer.lock
-              run: composer validate --strict --no-check-lock
+  build-phar:
+    name: PHAR Build Smoke Test
+    runs-on: ubuntu-latest
+    needs: quality
 
-            - name: Install dependencies
-              run: composer install --prefer-dist --no-progress --no-interaction
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Check PHP syntax
-              run: find src tests -name "*.php" -print0 | xargs -0 -n1 php -l
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: phar, zlib
+          ini-values: phar.readonly=0
 
-            - name: Run tests
-              if: matrix.coverage != true
-              run: vendor/bin/phpunit --no-coverage
-              env:
-                  REDIS_HOST: localhost
-                  REDIS_PORT: 6379
-                  MEMCACHED_HOST: localhost
-                  MEMCACHED_PORT: 11211
+      - name: Install humbug/box
+        run: |
+          wget -q -O box https://github.com/box-project/box/releases/latest/download/box.phar
+          chmod +x box
+          sudo mv box /usr/local/bin/box
 
-            - name: Run tests with coverage
-              if: matrix.coverage == true
-              run: vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-text
-              env:
-                  XDEBUG_MODE: coverage
-                  REDIS_HOST: localhost
-                  REDIS_PORT: 6379
-                  MEMCACHED_HOST: localhost
-                  MEMCACHED_PORT: 11211
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-            - name: Upload coverage to Codecov
-              if: matrix.coverage == true
-              uses: codecov/codecov-action@v4
-              with:
-                  files: ./coverage.xml
-                  flags: unittests
-                  name: codecov-php-${{ matrix.php }}
-                  fail_ci_if_error: false
+      - name: Compile PHAR
+        run: php -d phar.readonly=0 box compile --config=box.json
 
-            - name: Archive code coverage results
-              if: matrix.coverage == true
-              uses: actions/upload-artifact@v4
-              with:
-                  name: code-coverage-report
-                  path: coverage.xml
-                  retention-days: 30
-
-    # ============================================================================
-    # CODE QUALITY JOB - Run all quality checks
-    # ============================================================================
-    code-quality:
-        name: Code Quality
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: "8.4"
-                  extensions: mbstring, xml, ctype, json, tokenizer
-                  coverage: none
-                  tools: composer:v2, cs2pr
-              env:
-                  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Get Composer cache directory
-              id: composer-cache
-              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-            - name: Cache Composer dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-composer-
-
-            - name: Install dependencies
-              run: composer install --prefer-dist --no-progress --no-interaction
-
-            - name: Check code style (PHP CS Fixer)
-              run: vendor/bin/php-cs-fixer fix --dry-run --diff --format=checkstyle | cs2pr
-              continue-on-error: true
-
-            - name: Run static analysis (PHPStan)
-              run: vendor/bin/phpstan analyse --error-format=github --no-progress
-
-            - name: Run mess detector (PHPMD)
-              run: vendor/bin/phpmd src github devkit/.config/phpmd/ruleset.xml
-              continue-on-error: true
-
-            - name: Check for security vulnerabilities
-              run: composer audit --format=plain
-
-    # ============================================================================
-    # MUTATION TESTING JOB (Optional - runs on schedule)
-    # ============================================================================
-    mutation:
-        name: Mutation Testing
-        runs-on: ubuntu-latest
-        if: github.event_name == 'schedule' || contains(github.event.head_commit.message, '[mutation]')
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: "8.4"
-                  extensions: mbstring, xml, ctype, json
-                  coverage: xdebug
-                  tools: composer:v2
-
-            - name: Install dependencies
-              run: composer install --prefer-dist --no-progress
-
-            - name: Run Infection (Mutation Testing)
-              run: |
-                  composer require --dev infection/infection
-                  vendor/bin/infection --threads=4 --min-msi=70 --min-covered-msi=80
-              continue-on-error: true
-
-    # ============================================================================
-    # DOCUMENTATION JOB
-    # ============================================================================
-    documentation:
-        name: Documentation
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: "8.4"
-                  tools: composer:v2
-
-            - name: Install dependencies
-              run: composer install --prefer-dist --no-progress
-
-            - name: Generate API documentation
-              run: |
-                  composer require --dev phpdocumentor/phpdocumentor
-                  vendor/bin/phpdoc -d src -t docs/api
-              continue-on-error: true
-
-            - name: Deploy documentation to GitHub Pages
-              uses: peaceiris/actions-gh-pages@v4
-              if: success()
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./docs/api
-                  publish_branch: gh-pages
-
-    # ============================================================================
-    # COMPATIBILITY CHECK JOB
-    # ============================================================================
-    compatibility:
-        name: Backward Compatibility Check
-        runs-on: ubuntu-latest
-        if: github.event_name == 'pull_request'
-
-        steps:
-            - name: Checkout current code
-              uses: actions/checkout@v4
-              with:
-                  path: current
-
-            - name: Checkout base code
-              uses: actions/checkout@v4
-              with:
-                  ref: ${{ github.base_ref }}
-                  path: base
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: "8.4"
-                  tools: composer:v2
-
-            - name: Install roave/backward-compatibility-check
-              run: |
-                  cd current
-                  composer require --dev roave/backward-compatibility-check
-
-            - name: Check backward compatibility
-              run: |
-                  cd current
-                  vendor/bin/roave-backward-compatibility-check --from=../base
-              continue-on-error: true
+      - name: Verify PHAR
+        run: |
+          php build/kcode.phar --version
+          php build/kcode.phar --help
+          php build/kcode.phar init
+          echo "✓ PHAR smoke test passed"
