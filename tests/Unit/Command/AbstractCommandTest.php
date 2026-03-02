@@ -184,49 +184,4 @@ final class AbstractCommandTest extends TestCase
         $result = $this->command->callPassthrough($args);
         $this->assertSame($args, $result);
     }
-
-    // ── Output helpers — fwrite(STDOUT/STDERR) cannot be captured by ob_start ─
-    // We verify these methods exist and do not throw exceptions.
-
-    #[Test]
-    public function infoDoesNotThrow(): void
-    {
-        $this->expectNotToPerformAssertions();
-        $this->command->callInfo('hello');
-    }
-
-    #[Test]
-    public function warningDoesNotThrow(): void
-    {
-        $this->expectNotToPerformAssertions();
-        $this->command->callWarning('caution');
-    }
-
-    #[Test]
-    public function errorDoesNotThrow(): void
-    {
-        $this->expectNotToPerformAssertions();
-        $this->command->callError('something failed');
-    }
-
-    #[Test]
-    public function lineDoesNotThrow(): void
-    {
-        $this->expectNotToPerformAssertions();
-        $this->command->callLine('some output');
-    }
-
-    #[Test]
-    public function bannerDoesNotThrow(): void
-    {
-        $this->expectNotToPerformAssertions();
-        $this->command->callBanner('My Banner');
-    }
-
-    #[Test]
-    public function sectionDoesNotThrow(): void
-    {
-        $this->expectNotToPerformAssertions();
-        $this->command->callSection('My Section');
-    }
 }

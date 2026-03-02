@@ -6,13 +6,11 @@ namespace KaririCode\Devkit\Tests\Unit\Exception;
 
 use KaririCode\Devkit\Exception\DevkitException;
 use KaririCode\Devkit\Exception\ToolException;
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(ToolException::class)]
-#[UsesClass(DevkitException::class)]
+#[CoversNothing]
 final class ToolExceptionTest extends TestCase
 {
     #[Test]

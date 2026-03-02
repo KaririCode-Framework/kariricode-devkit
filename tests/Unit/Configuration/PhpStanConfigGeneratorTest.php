@@ -8,9 +8,11 @@ use KaririCode\Devkit\Configuration\PhpStanConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(PhpStanConfigGenerator::class)]
+#[UsesClass(ProjectContext::class)]
 final class PhpStanConfigGeneratorTest extends TestCase
 {
     private PhpStanConfigGenerator $generator;
