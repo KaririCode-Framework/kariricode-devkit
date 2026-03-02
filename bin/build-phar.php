@@ -1,12 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 /**
- * Manual PHAR builder for kcode — bypasses Box chdir() bug on PHP 8.4
+ * Manual PHAR builder for kcode — bypasses Box chdir() bug on PHP 8.4.
+ *
+ * The PHAR is intentionally lean: it bundles only the KaririCode\Devkit
+ * source classes and a minimal PSR-4 autoloader. Dev tools (phpunit,
+ * phpstan, etc.) are NOT bundled — `kcode init` installs them dynamically
+ * into .kcode/vendor/ of the target project via composer.
  */
 
-$root    = dirname(__DIR__);
-$output  = $root . '/build/kcode.phar';
+$root   = dirname(__DIR__);
+$output = $root . '/build/kcode.phar';
 
 if (file_exists($output)) {
     unlink($output);
