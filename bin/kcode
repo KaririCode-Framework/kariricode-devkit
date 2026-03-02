@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @since 1.0.0
  */
 
-(static function (): void {
+(static function (array $argv): void {
     // Autoloader resolution: PHAR → project vendor → global
     $autoloaderPaths = [
         // Running from PHAR
@@ -91,4 +91,4 @@ declare(strict_types=1);
     // ── Dispatch ──────────────────────────────────────────────────
 
     exit($app->run($argv));
-})();
+})($argv ?? []);
