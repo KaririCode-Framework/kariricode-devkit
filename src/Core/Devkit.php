@@ -105,8 +105,8 @@ final class Devkit
      */
     public function installTools(string $workingDirectory = '.'): int
     {
-        $context              = $this->context($workingDirectory);
-        $devkitDirectory      = $context->devkitDir;
+        $context = $this->context($workingDirectory);
+        $devkitDirectory = $context->devkitDir;
         $composerManifestPath = $devkitDirectory . \DIRECTORY_SEPARATOR . 'composer.json';
 
         if (! is_file($composerManifestPath)) {
@@ -115,7 +115,7 @@ final class Devkit
         }
 
         $composerBinary = $this->composerResolver->resolve();
-        $command        = [
+        $command = [
             $composerBinary,
             'install',
             '--working-dir=' . $devkitDirectory,
@@ -285,5 +285,4 @@ final class Devkit
 
         rmdir($dir);
     }
-
 }
