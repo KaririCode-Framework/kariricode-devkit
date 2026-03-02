@@ -32,28 +32,25 @@ foreach ($it as $file) {
 }
 echo "  + src/: $added PHP files\n";
 
-// ── 2. Add vendor/composer/ autoload files only ────────────
-// No PHP production dependencies — only the generated autoloader is needed.
-$autoloadFiles = [
-    'vendor/autoload.php',
-    'vendor/composer/autoload_classmap.php',
-    'vendor/composer/autoload_namespaces.php',
-    'vendor/composer/autoload_psr4.php',
-    'vendor/composer/autoload_real.php',
-    'vendor/composer/autoload_static.php',
-    'vendor/composer/ClassLoader.php',
-    'vendor/composer/platform_check.php',
-];
-
-$vendorAdded = 0;
-foreach ($autoloadFiles as $rel) {
-    $abs = $root . '/' . $rel;
-    if (file_exists($abs)) {
-        $phar[$rel] = file_get_contents($abs);
-        $vendorAdded++;
+// ── 2. Minimal PSR-4 autoloader (no Composer vendor/ needed) ─
+// The project has zero PHP production dependencies.
+// We generate a lean autoloader that maps KaririCode\Devkit → src/.
+$autoloader = <<<'PHP'
+<?php
+spl_autoload_register(static function (string $class): void {
+    $prefix = 'KaririCode\\Devkit\\';
+    if (!str_starts_with($class, $prefix)) {
+        return;
     }
-}
-echo "  + vendor/composer/: $vendorAdded autoload files\n";
+    $relative = substr($class, strlen($prefix));
+    $file = 'phar://kcode.phar/src/' . str_replace('\\', '/', $relative) . '.php';
+    if (is_file($file)) {
+        require $file;
+    }
+});
+PHP;
+$phar['vendor/autoload.php'] = $autoloader;
+echo "  + vendor/autoload.php: inline PSR-4 autoloader\n";
 
 
 // ── 3. Add LICENSE ──────────────────────────────────────────
