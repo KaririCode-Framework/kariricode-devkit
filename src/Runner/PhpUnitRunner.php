@@ -29,6 +29,8 @@ final class PhpUnitRunner extends AbstractToolRunner
         return [
             '--configuration',
             $this->context->configPath('phpunit.xml.dist'),
+            '--testdox',
+            '--colors=always',
         ];
     }
 }

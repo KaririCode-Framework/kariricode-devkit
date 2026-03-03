@@ -31,7 +31,7 @@ final class PhpUnitConfigGeneratorTest extends TestCase
             sourceDirs: ['/project/src'],
             testDirs: ['/project/tests'],
             excludeDirs: [],
-            testSuites: ['Unit' => 'tests/Unit', 'Integration' => 'tests/Integration'],
+            testSuites: ['Unit' => 'tests/Unit', 'Integration' => 'tests/Integration', 'Functional' => 'tests/Functional'],
             coverageExclude: [],
             csFixerRules: [],
             rectorSets: [],
@@ -64,6 +64,7 @@ final class PhpUnitConfigGeneratorTest extends TestCase
         $output = $this->generator->generate($this->context);
         $this->assertStringContainsString('name="Unit"', $output);
         $this->assertStringContainsString('name="Integration"', $output);
+        $this->assertStringContainsString('name="Functional"', $output);
     }
 
     #[Test]
