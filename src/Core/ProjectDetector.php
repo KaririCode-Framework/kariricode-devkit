@@ -75,7 +75,7 @@ final class ProjectDetector
             testDirs: $testDirs,
             excludeDirs: $config->get('exclude_dirs', ['src/Contract']),
             testSuites: $config->get('test_suites', $this->detectTestSuites($workingDirectory, $testDirs)),
-            coverageExclude: $config->get('coverage_exclude', ['src/Exception']),
+            coverageExclude: $config->get('coverage_exclude', []),
             csFixerRules: array_merge(self::DEFAULT_CS_RULES, $config->get('cs_fixer_rules', [])),
             rectorSets: $config->get('rector_sets', self::DEFAULT_RECTOR_SETS),
             toolVersions: $config->toolVersions(),

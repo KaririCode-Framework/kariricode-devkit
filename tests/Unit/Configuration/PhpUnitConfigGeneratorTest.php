@@ -32,7 +32,7 @@ final class PhpUnitConfigGeneratorTest extends TestCase
             testDirs: ['/project/tests'],
             excludeDirs: [],
             testSuites: ['Unit' => 'tests/Unit', 'Integration' => 'tests/Integration'],
-            coverageExclude: ['src/Exception'],
+            coverageExclude: [],
             csFixerRules: [],
             rectorSets: [],
             toolVersions: [],
@@ -74,9 +74,34 @@ final class PhpUnitConfigGeneratorTest extends TestCase
     }
 
     #[Test]
-    public function generateContainsCoverageExcludes(): void
+    public function generateOmitsExcludeBlockWhenCoverageExcludeIsEmpty(): void
     {
         $output = $this->generator->generate($this->context);
+        $this->assertStringNotContainsString('<exclude>', $output);
+    }
+
+    #[Test]
+    public function generateContainsCoverageExcludesWhenConfigured(): void
+    {
+        $context = new ProjectContext(
+            projectRoot: '/project',
+            projectName: 'test/project',
+            namespace: 'Test\\Project',
+            phpVersion: '8.4',
+            phpstanLevel: 9,
+            psalmLevel: 3,
+            sourceDirs: ['/project/src'],
+            testDirs: ['/project/tests'],
+            excludeDirs: [],
+            testSuites: [],
+            coverageExclude: ['src/Exception'],
+            csFixerRules: [],
+            rectorSets: [],
+            toolVersions: [],
+        );
+
+        $output = $this->generator->generate($context);
+        $this->assertStringContainsString('<exclude>', $output);
         $this->assertStringContainsString('../src/Exception', $output);
     }
 

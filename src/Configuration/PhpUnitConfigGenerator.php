@@ -35,7 +35,7 @@ final class PhpUnitConfigGenerator implements ConfigGenerator
     {
         $suites = $this->renderSuites($context);
         $sourceIncludes = $this->renderDirList($context->relativeSourceDirs(), 12);
-        $coverageExcludes = $this->renderDirList($context->coverageExclude, 12);
+        $coverageExcludes = $this->renderExcludeBlock($context->coverageExclude);
 
         return <<<XML
             <?xml version="1.0" encoding="UTF-8"?>
@@ -65,9 +65,7 @@ final class PhpUnitConfigGenerator implements ConfigGenerator
                 <source restrictDeprecations="true" restrictNotices="true" restrictWarnings="true">
                     <include>
             {$sourceIncludes}        </include>
-                    <exclude>
-            {$coverageExcludes}        </exclude>
-                </source>
+            {$coverageExcludes}    </source>
 
                 <coverage includeUncoveredFiles="true"
                           pathCoverage="false"
@@ -99,6 +97,18 @@ final class PhpUnitConfigGenerator implements ConfigGenerator
         }
 
         return $xml;
+    }
+
+    /** @param list<string> $dirs */
+    private function renderExcludeBlock(array $dirs): string
+    {
+        if ([] === $dirs) {
+            return '';
+        }
+
+        $listing = $this->renderDirList($dirs, 12);
+
+        return "            <exclude>\n{$listing}        </exclude>\n";
     }
 
     /** @param list<string> $dirs */
