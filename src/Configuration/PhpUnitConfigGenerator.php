@@ -46,7 +46,7 @@ final class PhpUnitConfigGenerator implements ConfigGenerator
                      cacheDirectory="build/.phpunit.cache"
                      executionOrder="depends,defects"
                      requireCoverageMetadata="false"
-                     beStrictAboutCoverageMetadata="true"
+                     beStrictAboutCoverageMetadata="false"
                      beStrictAboutOutputDuringTests="true"
                      failOnRisky="true"
                      failOnWarning="true"
