@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Runner;
 
+use Override;
+
 /**
  * Runs PHPUnit with the generated `.kcode/phpunit.xml.dist`.
  *
@@ -11,19 +13,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class PhpUnitRunner extends AbstractToolRunner
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'phpunit';
     }
 
-    #[\Override]
+    #[Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/phpunit';
     }
 
-    #[\Override]
+    #[Override]
     protected function defaultArguments(): array
     {
         return [

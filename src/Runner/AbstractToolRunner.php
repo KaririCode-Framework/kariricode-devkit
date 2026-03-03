@@ -8,6 +8,7 @@ use KaririCode\Devkit\Contract\ToolRunner;
 use KaririCode\Devkit\Core\ProcessExecutor;
 use KaririCode\Devkit\Core\ProjectContext;
 use KaririCode\Devkit\ValueObject\ToolResult;
+use Override;
 
 /**
  * Base runner: resolves binary via three-tier strategy and delegates
@@ -36,14 +37,14 @@ abstract class AbstractToolRunner implements ToolRunner
      */
     abstract protected function defaultArguments(): array;
 
-    #[\Override]
+    #[Override]
     public function isAvailable(): bool
     {
         return null !== $this->binary();
     }
 
     /** @param list<string> $arguments */
-    #[\Override]
+    #[Override]
     public function run(array $arguments = []): ToolResult
     {
         $binary = $this->binary();

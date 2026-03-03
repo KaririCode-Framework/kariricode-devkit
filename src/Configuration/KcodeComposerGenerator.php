@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Configuration;
 
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
+use Override;
+
+use const PHP_EOL;
 
 /**
  * Generates `.kcode/composer.json` — the self-contained dev-toolchain manifest.
@@ -39,19 +45,19 @@ final class KcodeComposerGenerator implements ConfigGenerator
         'psalm' => 'vimeo/psalm',
     ];
 
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'kcode-composer';
     }
 
-    #[\Override]
+    #[Override]
     public function outputPath(): string
     {
         return 'composer.json';
     }
 
-    #[\Override]
+    #[Override]
     public function generate(ProjectContext $context): string
     {
         $require = $this->resolveVersions($context->toolVersions);
@@ -73,7 +79,7 @@ final class KcodeComposerGenerator implements ConfigGenerator
             'prefer-stable' => true,
         ];
 
-        return (string) json_encode($manifest, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES) . \PHP_EOL;
+        return (string) json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
     }
 
     /**

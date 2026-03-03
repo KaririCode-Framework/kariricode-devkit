@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
+use Override;
 
 /**
  * Runs Rector. Default: dry-run preview. Pass `--fix` to apply changes.
@@ -13,19 +14,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class RectorCommand extends AbstractCommand
 {
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'rector';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Run Rector (--fix to apply changes)';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $apply = $this->hasFlag($arguments, '--fix', '--apply');

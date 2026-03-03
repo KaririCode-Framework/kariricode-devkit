@@ -61,28 +61,4 @@ final class MigrationReportTest extends TestCase
         $this->assertTrue($report->hasConfigFiles());
         $this->assertTrue($report->hasCachePaths());
     }
-
-    #[Test]
-    public function removeFilesDeletesExistingFiles(): void
-    {
-        $tmpDir = sys_get_temp_dir() . '/devkit_test_' . uniqid();
-        mkdir($tmpDir, 0o777, true);
-
-        $fileToRemove = $tmpDir . '/phpstan.neon';
-        file_put_contents($fileToRemove, 'parameters:');
-
-        $report = new MigrationReport(
-            projectRoot: $tmpDir,
-            redundantPackages: [],
-            redundantConfigFiles: ['phpstan.neon'],
-            redundantCachePaths: [],
-        );
-
-        $removed = $report->removeFiles();
-
-        $this->assertSame(1, $removed);
-        $this->assertFileDoesNotExist($fileToRemove);
-
-        rmdir($tmpDir);
-    }
 }

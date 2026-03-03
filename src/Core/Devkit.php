@@ -4,11 +4,25 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Core;
 
+use const DIRECTORY_SEPARATOR;
+use const FILE_APPEND;
+
+use FilesystemIterator;
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Contract\ToolRunner;
 use KaririCode\Devkit\Exception\DevkitException;
 use KaririCode\Devkit\ValueObject\QualityReport;
 use KaririCode\Devkit\ValueObject\ToolResult;
+
+use const PHP_EOL;
+
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+
+use const STDERR;
+use const STDIN;
+use const STDOUT;
 
 /**
  * Top-level orchestrator for all devkit operations.
@@ -68,24 +82,24 @@ final class Devkit
     /** Generate all config files inside `.kcode/`. Returns file count. */
     public function init(string $workingDirectory = '.'): int
     {
-        $ctx = $this->context($workingDirectory);
-        $this->ensureDirectories($ctx);
+        $context = $this->context($workingDirectory);
+        $this->ensureDirectories($context);
 
         $count = 0;
 
         foreach ($this->generators as $generator) {
-            $path = $ctx->configPath($generator->outputPath());
+            $path = $context->configPath($generator->outputPath());
 
-            $dir = \dirname($path);
-            if (! is_dir($dir)) {
-                mkdir($dir, 0o755, true);
+            $directoryPath = \dirname($path);
+            if (! is_dir($directoryPath)) {
+                mkdir($directoryPath, 0o755, true);
             }
 
-            file_put_contents($path, $generator->generate($ctx));
+            file_put_contents($path, $generator->generate($context));
             ++$count;
         }
 
-        $this->appendGitIgnore($ctx);
+        $this->appendGitIgnore($context);
 
         return $count;
     }
@@ -107,7 +121,7 @@ final class Devkit
     {
         $context = $this->context($workingDirectory);
         $devkitDirectory = $context->devkitDir;
-        $composerManifestPath = $devkitDirectory . \DIRECTORY_SEPARATOR . 'composer.json';
+        $composerManifestPath = $devkitDirectory . DIRECTORY_SEPARATOR . 'composer.json';
 
         if (! is_file($composerManifestPath)) {
             // KcodeComposerGenerator not registered — nothing to install
@@ -127,7 +141,7 @@ final class Devkit
 
         $process = proc_open(
             $command,
-            [0 => \STDIN, 1 => \STDOUT, 2 => \STDERR],
+            [0 => STDIN, 1 => STDOUT, 2 => STDERR],
             $pipes,
             $workingDirectory,
         );
@@ -218,26 +232,26 @@ final class Devkit
 
     // ── Internals ─────────────────────────────────────────────────
 
-    private function ensureDirectories(ProjectContext $ctx): void
+    private function ensureDirectories(ProjectContext $context): void
     {
-        foreach ([$ctx->devkitDir, $ctx->buildDir] as $dir) {
-            if (! is_dir($dir) && ! mkdir($dir, 0o755, true)) {
-                throw DevkitException::directoryNotWritable($dir);
+        foreach ([$context->devkitDir, $context->buildDir] as $directoryPath) {
+            if (! is_dir($directoryPath) && ! mkdir($directoryPath, 0o755, true)) {
+                throw DevkitException::directoryNotWritable($directoryPath);
             }
         }
     }
 
-    private function appendGitIgnore(ProjectContext $ctx): void
+    private function appendGitIgnore(ProjectContext $context): void
     {
-        $gitignore = $ctx->projectRoot . \DIRECTORY_SEPARATOR . '.gitignore';
+        $gitignore = $context->projectRoot . DIRECTORY_SEPARATOR . '.gitignore';
         $entry = '.kcode/';
 
         // Create .gitignore if it doesn't exist
         if (! is_file($gitignore)) {
             file_put_contents(
                 $gitignore,
-                '# KaririCode Devkit — generated configs and build artifacts' . \PHP_EOL
-                . $entry . \PHP_EOL,
+                '# KaririCode Devkit — generated configs and build artifacts' . PHP_EOL
+                . $entry . PHP_EOL,
             );
 
             return;
@@ -265,24 +279,24 @@ final class Devkit
 
         file_put_contents(
             $gitignore,
-            \PHP_EOL . '# KaririCode Devkit — generated configs and build artifacts' . \PHP_EOL
-            . $entry . \PHP_EOL,
-            \FILE_APPEND,
+            PHP_EOL . '# KaririCode Devkit — generated configs and build artifacts' . PHP_EOL
+            . $entry . PHP_EOL,
+            FILE_APPEND,
         );
     }
 
-    private function removeRecursive(string $dir): void
+    private function removeRecursive(string $directoryPath): void
     {
-        $items = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST,
+        $items = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directoryPath, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
         );
 
         foreach ($items as $item) {
-            /** @var \SplFileInfo $item */
+            /** @var SplFileInfo $item */
             $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
         }
 
-        rmdir($dir);
+        rmdir($directoryPath);
     }
 }

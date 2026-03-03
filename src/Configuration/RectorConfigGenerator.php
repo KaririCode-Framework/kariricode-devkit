@@ -6,6 +6,7 @@ namespace KaririCode\Devkit\Configuration;
 
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
+use Override;
 
 /**
  * Generates `.kcode/rector.php` targeting PHP 8.4 quality sets.
@@ -14,19 +15,19 @@ use KaririCode\Devkit\Core\ProjectContext;
  */
 final class RectorConfigGenerator implements ConfigGenerator
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'rector';
     }
 
-    #[\Override]
+    #[Override]
     public function outputPath(): string
     {
         return 'rector.php';
     }
 
-    #[\Override]
+    #[Override]
     public function generate(ProjectContext $context): string
     {
         $paths = '';

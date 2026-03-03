@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Tests\Unit\Core;
 
+use FilesystemIterator;
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Contract\ToolRunner;
 use KaririCode\Devkit\Core\Devkit;
@@ -17,6 +18,10 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
+use SplFileInfo;
 
 #[CoversClass(Devkit::class)]
 #[UsesClass(ProjectContext::class)]
@@ -196,7 +201,7 @@ final class DevkitTest extends TestCase
         $runner = $this->createMock(ToolRunner::class);
         $runner->method('toolName')->willReturn('phpstan');
         $runner->method('isAvailable')->willReturn(false);
-        $runner->method('run')->willThrowException(new \RuntimeException('Should not be called'));
+        $runner->method('run')->willThrowException(new RuntimeException('Should not be called'));
 
         $this->devkit->addRunner($runner);
         $report = $this->devkit->quality(['phpstan']);
@@ -271,13 +276,13 @@ final class DevkitTest extends TestCase
             return;
         }
 
-        $items = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST,
+        $items = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
         );
 
         foreach ($items as $item) {
-            /** @var \SplFileInfo $item */
+            /** @var SplFileInfo $item */
             $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
         }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
+use Override;
 
 /**
  * Runs PHPUnit via the devkit runner.
@@ -15,19 +16,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class TestCommand extends AbstractCommand
 {
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'test';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Run PHPUnit tests';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Test');

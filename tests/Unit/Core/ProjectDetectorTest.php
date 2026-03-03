@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Tests\Unit\Core;
 
+use FilesystemIterator;
 use KaririCode\Devkit\Core\DevkitConfig;
 use KaririCode\Devkit\Core\ProjectContext;
 use KaririCode\Devkit\Core\ProjectDetector;
@@ -12,6 +13,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 
 #[CoversClass(ProjectDetector::class)]
 #[UsesClass(ProjectContext::class)]
@@ -143,13 +147,13 @@ final class ProjectDetectorTest extends TestCase
             return;
         }
 
-        $items = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST,
+        $items = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST,
         );
 
         foreach ($items as $item) {
-            /** @var \SplFileInfo $item */
+            /** @var SplFileInfo $item */
             $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
         }
 

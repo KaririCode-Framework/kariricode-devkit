@@ -6,6 +6,11 @@ namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
 
+use const PHP_EOL;
+use const STDERR;
+use const STDIN;
+use const STDOUT;
+
 /**
  * Base command with output formatting, option parsing, and exit-code handling.
  *
@@ -24,22 +29,22 @@ abstract class AbstractCommand
 
     protected function info(string $message): void
     {
-        fwrite(\STDOUT, "\033[32m✓\033[0m {$message}" . \PHP_EOL);
+        fwrite(STDOUT, "\033[32m✓\033[0m {$message}" . PHP_EOL);
     }
 
     protected function warning(string $message): void
     {
-        fwrite(\STDOUT, "\033[33m⚠\033[0m {$message}" . \PHP_EOL);
+        fwrite(STDOUT, "\033[33m⚠\033[0m {$message}" . PHP_EOL);
     }
 
     protected function error(string $message): void
     {
-        fwrite(\STDERR, "\033[31m✗\033[0m {$message}" . \PHP_EOL);
+        fwrite(STDERR, "\033[31m✗\033[0m {$message}" . PHP_EOL);
     }
 
     protected function line(string $message = ''): void
     {
-        fwrite(\STDOUT, $message . \PHP_EOL);
+        fwrite(STDOUT, $message . PHP_EOL);
     }
 
     protected function banner(string $title): void
@@ -65,9 +70,9 @@ abstract class AbstractCommand
     protected function confirm(string $question, bool $default = false): bool
     {
         $hint = $default ? '[Y/n]' : '[y/N]';
-        fwrite(\STDOUT, "\033[33m?\033[0m {$question} {$hint} ");
+        fwrite(STDOUT, "\033[33m?\033[0m {$question} {$hint} ");
 
-        $input = trim((string) fgets(\STDIN));
+        $input = trim((string) fgets(STDIN));
 
         if ('' === $input) {
             return $default;

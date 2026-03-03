@@ -6,6 +6,7 @@ namespace KaririCode\Devkit\Configuration;
 
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
+use Override;
 
 /**
  * Generates `.kcode/psalm.xml`.
@@ -14,19 +15,19 @@ use KaririCode\Devkit\Core\ProjectContext;
  */
 final class PsalmConfigGenerator implements ConfigGenerator
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'psalm';
     }
 
-    #[\Override]
+    #[Override]
     public function outputPath(): string
     {
         return 'psalm.xml';
     }
 
-    #[\Override]
+    #[Override]
     public function generate(ProjectContext $context): string
     {
         $sourceDirs = '';

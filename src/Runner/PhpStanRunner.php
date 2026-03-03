@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Runner;
 
+use Override;
+
 /**
  * Runs PHPStan with the generated `.kcode/phpstan.neon`.
  *
@@ -11,19 +13,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class PhpStanRunner extends AbstractToolRunner
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'phpstan';
     }
 
-    #[\Override]
+    #[Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/phpstan';
     }
 
-    #[\Override]
+    #[Override]
     protected function defaultArguments(): array
     {
         return [

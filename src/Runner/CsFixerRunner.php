@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Runner;
 
+use Override;
+
 /**
  * Runs PHP-CS-Fixer with the generated `.kcode/php-cs-fixer.php`.
  *
@@ -13,19 +15,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class CsFixerRunner extends AbstractToolRunner
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'cs-fixer';
     }
 
-    #[\Override]
+    #[Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/php-cs-fixer';
     }
 
-    #[\Override]
+    #[Override]
     protected function defaultArguments(): array
     {
         return [

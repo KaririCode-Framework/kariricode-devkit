@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Command;
 
+use const DIRECTORY_SEPARATOR;
+
 use KaririCode\Devkit\Core\Devkit;
 use KaririCode\Devkit\Core\MigrationDetector;
+use Override;
+
+use const PHP_EOL;
 
 /**
  * Generates all config files inside `.kcode/` and installs dev tools.
@@ -27,19 +32,19 @@ final class InitCommand extends AbstractCommand
     ) {
     }
 
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'init';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Generate .kcode/ configs (--config to scaffold devkit.php)';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Init');
@@ -54,12 +59,12 @@ final class InitCommand extends AbstractCommand
 
         $this->line();
         $this->info("Generated {$count} config file(s) in .kcode/");
-        $this->info(".kcode/ added to .gitignore (regenerate with kcode init)");
+        $this->info('.kcode/ added to .gitignore (regenerate with kcode init)');
 
         // ── Phase 2: Install dev tools into .kcode/vendor/ ──────────────
         if (! $this->hasFlag($arguments, '--skip-install')) {
             $this->line();
-            $this->info("Installing dev tools into .kcode/vendor/ ...");
+            $this->info('Installing dev tools into .kcode/vendor/ ...');
 
             $exitCode = $devkit->installTools($context->projectRoot);
 
@@ -70,7 +75,7 @@ final class InitCommand extends AbstractCommand
                 return $exitCode;
             }
 
-            $this->info("Dev tools installed in .kcode/vendor/bin/");
+            $this->info('Dev tools installed in .kcode/vendor/bin/');
         }
 
         // ── Phase 3: Scaffold devkit.php if requested ────────────────────
@@ -95,7 +100,7 @@ final class InitCommand extends AbstractCommand
 
     private function scaffoldDevkitConfig(string $projectRoot): void
     {
-        $configPath = $projectRoot . \DIRECTORY_SEPARATOR . 'devkit.php';
+        $configPath = $projectRoot . DIRECTORY_SEPARATOR . 'devkit.php';
 
         if (is_file($configPath)) {
             $this->warning('devkit.php already exists — skipping scaffold.');
@@ -177,7 +182,7 @@ final class InitCommand extends AbstractCommand
             ];
             PHP_WRAP;
 
-        file_put_contents($configPath, $content . \PHP_EOL);
+        file_put_contents($configPath, $content . PHP_EOL);
 
         $this->line();
         $this->info('Scaffolded devkit.php in project root.');

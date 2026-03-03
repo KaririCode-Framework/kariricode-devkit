@@ -6,6 +6,7 @@ namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
 use KaririCode\Devkit\ValueObject\ToolResult;
+use Override;
 
 /**
  * Full quality pipeline: cs-check → phpstan → psalm → phpunit.
@@ -14,19 +15,19 @@ use KaririCode\Devkit\ValueObject\ToolResult;
  */
 final class QualityCommand extends AbstractCommand
 {
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'quality';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Full pipeline: cs:check → analyse → test';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Quality Pipeline');

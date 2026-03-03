@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Core;
 
+use const DIRECTORY_SEPARATOR;
+use const JSON_THROW_ON_ERROR;
+
 use KaririCode\Devkit\ValueObject\MigrationReport;
 
 /**
@@ -53,7 +56,7 @@ final class MigrationDetector
 
     public function detect(string $projectRoot): MigrationReport
     {
-        $composerPath = $projectRoot . \DIRECTORY_SEPARATOR . 'composer.json';
+        $composerPath = $projectRoot . DIRECTORY_SEPARATOR . 'composer.json';
 
         $redundantPackages = [];
         $redundantConfigFiles = [];
@@ -69,7 +72,7 @@ final class MigrationDetector
                     $raw,
                     true,
                     512,
-                    \JSON_THROW_ON_ERROR,
+                    JSON_THROW_ON_ERROR,
                 );
 
                 /** @var array<string, string> $requireDev */
@@ -85,7 +88,7 @@ final class MigrationDetector
 
         // Scan root-level config files
         foreach (self::REPLACED_CONFIG_FILES as $file) {
-            $fullPath = $projectRoot . \DIRECTORY_SEPARATOR . $file;
+            $fullPath = $projectRoot . DIRECTORY_SEPARATOR . $file;
             if (is_file($fullPath)) {
                 $redundantConfigFiles[] = $file;
             }
@@ -93,7 +96,7 @@ final class MigrationDetector
 
         // Scan root-level cache paths
         foreach (self::REPLACED_CACHE_PATHS as $cachePath) {
-            $fullPath = $projectRoot . \DIRECTORY_SEPARATOR . $cachePath;
+            $fullPath = $projectRoot . DIRECTORY_SEPARATOR . $cachePath;
             if (file_exists($fullPath)) {
                 $redundantCachePaths[] = $cachePath;
             }

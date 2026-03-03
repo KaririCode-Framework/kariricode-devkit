@@ -8,6 +8,7 @@ use KaririCode\Devkit\Exception\DevkitException;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 #[CoversNothing]
 final class DevkitExceptionTest extends TestCase
@@ -38,6 +39,6 @@ final class DevkitExceptionTest extends TestCase
     {
         $ex = DevkitException::projectNotDetected('/foo');
 
-        $this->assertInstanceOf(\RuntimeException::class, $ex);
+        $this->assertInstanceOf(RuntimeException::class, $ex);
     }
 }

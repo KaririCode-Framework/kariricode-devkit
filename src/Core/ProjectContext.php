@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Core;
 
+use const DIRECTORY_SEPARATOR;
+
 /**
  * Immutable snapshot of a project's structure and devkit configuration.
  *
@@ -43,20 +45,20 @@ final readonly class ProjectContext
         public array $rectorSets,
         public array $toolVersions,
     ) {
-        $this->devkitDir = $projectRoot . \DIRECTORY_SEPARATOR . '.kcode';
-        $this->buildDir = $this->devkitDir . \DIRECTORY_SEPARATOR . 'build';
+        $this->devkitDir = $projectRoot . DIRECTORY_SEPARATOR . '.kcode';
+        $this->buildDir = $this->devkitDir . DIRECTORY_SEPARATOR . 'build';
     }
 
     /** Absolute path to a file inside `.kcode/`. */
     public function configPath(string $filename): string
     {
-        return $this->devkitDir . \DIRECTORY_SEPARATOR . $filename;
+        return $this->devkitDir . DIRECTORY_SEPARATOR . $filename;
     }
 
     /** Absolute path inside `.kcode/build/`. */
     public function buildPath(string $filename = ''): string
     {
-        return $this->buildDir . ('' !== $filename ? \DIRECTORY_SEPARATOR . $filename : '');
+        return $this->buildDir . ('' !== $filename ? DIRECTORY_SEPARATOR . $filename : '');
     }
 
     /** @return list<string> Convert absolute source dirs to project-relative paths. */
@@ -73,7 +75,7 @@ final readonly class ProjectContext
 
     public function relativize(string $absolutePath): string
     {
-        $prefix = $this->projectRoot . \DIRECTORY_SEPARATOR;
+        $prefix = $this->projectRoot . DIRECTORY_SEPARATOR;
 
         return str_starts_with($absolutePath, $prefix)
             ? substr($absolutePath, \strlen($prefix))

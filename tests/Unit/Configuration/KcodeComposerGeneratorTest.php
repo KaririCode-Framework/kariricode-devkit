@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Tests\Unit\Configuration;
 
+use const JSON_THROW_ON_ERROR;
+
 use KaririCode\Devkit\Configuration\KcodeComposerGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
+
+use const PHP_EOL;
+
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -58,7 +63,7 @@ final class KcodeComposerGeneratorTest extends TestCase
         $output = $generator->generate($this->context);
 
         /** @var array<string, mixed> $manifest */
-        $manifest = json_decode($output, true, 512, \JSON_THROW_ON_ERROR);
+        $manifest = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame('kariricode/devkit-tools', $manifest['name']);
         $this->assertIsArray($manifest['require']);
@@ -96,7 +101,7 @@ final class KcodeComposerGeneratorTest extends TestCase
         $output = $generator->generate($contextWithVersions);
 
         /** @var array<string, mixed> $manifest */
-        $manifest = json_decode($output, true, 512, \JSON_THROW_ON_ERROR);
+        $manifest = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
 
         $require = $manifest['require'];
         $this->assertSame('^11.0', $require['phpunit/phpunit']);
@@ -112,7 +117,7 @@ final class KcodeComposerGeneratorTest extends TestCase
         $output = $generator->generate($this->context);
 
         /** @var array<string, mixed> $manifest */
-        $manifest = json_decode($output, true, 512, \JSON_THROW_ON_ERROR);
+        $manifest = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsArray($manifest['config']);
         $this->assertSame('full', $manifest['config']['bin-compat']);
@@ -125,6 +130,6 @@ final class KcodeComposerGeneratorTest extends TestCase
         $generator = new KcodeComposerGenerator();
         $output = $generator->generate($this->context);
 
-        $this->assertStringEndsWith(\PHP_EOL, $output);
+        $this->assertStringEndsWith(PHP_EOL, $output);
     }
 }

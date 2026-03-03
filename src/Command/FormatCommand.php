@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
+use Override;
 
 /**
  * Applies all formatting: CS-Fixer fix + Rector apply.
@@ -13,19 +14,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class FormatCommand extends AbstractCommand
 {
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'format';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Apply all formatting (cs:fix + rector --fix)';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Format');

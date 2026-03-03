@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Command;
 
+use const DIRECTORY_SEPARATOR;
+
 use KaririCode\Devkit\Core\Devkit;
 use KaririCode\Devkit\Core\MigrationDetector;
+use KaririCode\Devkit\Core\MigrationService;
 use KaririCode\Devkit\ValueObject\MigrationReport;
+use Override;
 
 /**
  * Detects redundant dev dependencies and root-level config files,
@@ -24,22 +28,23 @@ final class MigrateCommand extends AbstractCommand
 {
     public function __construct(
         private readonly MigrationDetector $detector,
+        private readonly MigrationService $service = new MigrationService(),
     ) {
     }
 
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'migrate';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Detect and remove redundant dev dependencies and root configs';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Migrate');
@@ -73,7 +78,7 @@ final class MigrateCommand extends AbstractCommand
             );
 
             if ($shouldRemoveFiles) {
-                $filesRemoved = $report->removeFiles();
+                $filesRemoved = $this->service->removeFiles($report);
                 $this->info("Removed {$filesRemoved} file(s)/directory(ies).");
             } else {
                 $this->warning('Skipped file removal.');
@@ -89,7 +94,7 @@ final class MigrateCommand extends AbstractCommand
             );
 
             if ($shouldRemovePackages) {
-                $packagesRemoved = $report->removePackagesFromComposer();
+                $packagesRemoved = $this->service->removePackagesFromComposer($report);
 
                 if ([] !== $packagesRemoved) {
                     $this->info(\sprintf(
@@ -149,7 +154,7 @@ final class MigrateCommand extends AbstractCommand
             $this->section('Root-level cache paths');
 
             foreach ($report->redundantCachePaths as $cachePath) {
-                $isDir = is_dir($report->projectRoot . \DIRECTORY_SEPARATOR . $cachePath);
+                $isDir = is_dir($report->projectRoot . DIRECTORY_SEPARATOR . $cachePath);
                 $suffix = $isDir ? '/' : '';
                 $this->line("    \033[31m✗\033[0m {$cachePath}{$suffix}");
             }

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Exception;
 
+use RuntimeException;
+
 /**
  * Base exception for all devkit errors.
  *
  * @since 1.0.0
  */
-class DevkitException extends \RuntimeException
+class DevkitException extends RuntimeException
 {
     public static function projectNotDetected(string $path): self
     {

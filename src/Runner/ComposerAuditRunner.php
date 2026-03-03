@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Runner;
 
+use Override;
+
 /**
  * Runs `composer audit` for known vulnerability scanning.
  *
@@ -14,19 +16,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class ComposerAuditRunner extends AbstractToolRunner
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'composer-audit';
     }
 
-    #[\Override]
+    #[Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/composer';
     }
 
-    #[\Override]
+    #[Override]
     protected function defaultArguments(): array
     {
         return ['audit', '--format=plain', '--ansi'];
@@ -36,7 +38,7 @@ final class ComposerAuditRunner extends AbstractToolRunner
      * Composer is typically global — override binary resolution
      * to prefer global `composer` before vendor path.
      */
-    #[\Override]
+    #[Override]
     protected function binary(): ?string
     {
         /** @psalm-suppress ForbiddenCode — shell_exec is intentional for binary resolution; input is escaped */

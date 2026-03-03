@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
+use Override;
 
 /**
  * Runs PHP-CS-Fixer. Default: fix. Pass `--check` for dry-run.
@@ -13,19 +14,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class CsFixCommand extends AbstractCommand
 {
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'cs:fix';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Fix code style (--check for dry-run)';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $dryRun = $this->hasFlag($arguments, '--check', '--dry-run');

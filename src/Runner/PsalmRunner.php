@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Runner;
 
+use Override;
+
 /**
  * Runs Psalm with the generated `.kcode/psalm.xml`.
  *
@@ -11,19 +13,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class PsalmRunner extends AbstractToolRunner
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'psalm';
     }
 
-    #[\Override]
+    #[Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/psalm';
     }
 
-    #[\Override]
+    #[Override]
     protected function defaultArguments(): array
     {
         return [

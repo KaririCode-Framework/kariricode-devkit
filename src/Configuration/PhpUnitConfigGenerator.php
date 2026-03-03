@@ -6,6 +6,7 @@ namespace KaririCode\Devkit\Configuration;
 
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
+use Override;
 
 /**
  * Generates `.kcode/phpunit.xml.dist`.
@@ -18,19 +19,19 @@ use KaririCode\Devkit\Core\ProjectContext;
  */
 final class PhpUnitConfigGenerator implements ConfigGenerator
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'phpunit';
     }
 
-    #[\Override]
+    #[Override]
     public function outputPath(): string
     {
         return 'phpunit.xml.dist';
     }
 
-    #[\Override]
+    #[Override]
     public function generate(ProjectContext $context): string
     {
         $suites = $this->renderSuites($context);

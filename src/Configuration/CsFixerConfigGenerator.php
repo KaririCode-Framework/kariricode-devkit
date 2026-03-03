@@ -6,6 +6,7 @@ namespace KaririCode\Devkit\Configuration;
 
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
+use Override;
 
 /**
  * Generates `.kcode/php-cs-fixer.php`.
@@ -17,19 +18,19 @@ use KaririCode\Devkit\Core\ProjectContext;
  */
 final class CsFixerConfigGenerator implements ConfigGenerator
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'cs-fixer';
     }
 
-    #[\Override]
+    #[Override]
     public function outputPath(): string
     {
         return 'php-cs-fixer.php';
     }
 
-    #[\Override]
+    #[Override]
     public function generate(ProjectContext $context): string
     {
         $finderDirs = '';

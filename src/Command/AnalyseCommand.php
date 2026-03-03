@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KaririCode\Devkit\Command;
 
 use KaririCode\Devkit\Core\Devkit;
+use Override;
 
 /**
  * Runs static analysis: PHPStan + Psalm (both optional).
@@ -13,19 +14,19 @@ use KaririCode\Devkit\Core\Devkit;
  */
 final class AnalyseCommand extends AbstractCommand
 {
-    #[\Override]
+    #[Override]
     public function name(): string
     {
         return 'analyse';
     }
 
-    #[\Override]
+    #[Override]
     public function description(): string
     {
         return 'Run static analysis (PHPStan + Psalm)';
     }
 
-    #[\Override]
+    #[Override]
     public function execute(Devkit $devkit, array $arguments): int
     {
         $this->banner('KaririCode Devkit — Analyse');

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Core;
 
+use const DIRECTORY_SEPARATOR;
+use const JSON_THROW_ON_ERROR;
+
 use KaririCode\Devkit\Exception\DevkitException;
 
 /**
@@ -21,7 +24,7 @@ final class ProjectDetector
 {
     public function detect(string $workingDirectory): ProjectContext
     {
-        $composerPath = $workingDirectory . \DIRECTORY_SEPARATOR . 'composer.json';
+        $composerPath = $workingDirectory . DIRECTORY_SEPARATOR . 'composer.json';
 
         if (! is_file($composerPath)) {
             throw DevkitException::projectNotDetected($workingDirectory);
@@ -38,7 +41,7 @@ final class ProjectDetector
             $raw,
             true,
             512,
-            \JSON_THROW_ON_ERROR,
+            JSON_THROW_ON_ERROR,
         );
 
         // Load overrides from project root devkit.php (not from .kcode/)
@@ -119,7 +122,7 @@ final class ProjectDetector
 
         foreach ($psr4Map as $paths) {
             foreach ((array) $paths as $path) {
-                $absolute = $root . \DIRECTORY_SEPARATOR . rtrim((string) $path, '/');
+                $absolute = $root . DIRECTORY_SEPARATOR . rtrim((string) $path, '/');
                 if (is_dir($absolute)) {
                     $dirs[] = $absolute;
                 }
@@ -129,7 +132,7 @@ final class ProjectDetector
         // Fallback: use context-aware defaults (source → 'src', test → 'tests')
         if ([] === $dirs) {
             foreach ($fallbackDirs as $fallback) {
-                $candidate = $root . \DIRECTORY_SEPARATOR . $fallback;
+                $candidate = $root . DIRECTORY_SEPARATOR . $fallback;
                 if (is_dir($candidate)) {
                     $dirs[] = $candidate;
 
@@ -152,9 +155,9 @@ final class ProjectDetector
 
         foreach ($testDirs as $testDir) {
             foreach ($standard as $suite) {
-                $candidate = $testDir . \DIRECTORY_SEPARATOR . $suite;
+                $candidate = $testDir . DIRECTORY_SEPARATOR . $suite;
                 if (is_dir($candidate)) {
-                    $relative = str_replace($root . \DIRECTORY_SEPARATOR, '', $candidate);
+                    $relative = str_replace($root . DIRECTORY_SEPARATOR, '', $candidate);
                     $suites[$suite] = $relative;
                 }
             }
@@ -162,7 +165,7 @@ final class ProjectDetector
 
         // If nothing detected, register full test dir
         if ([] === $suites && [] !== $testDirs) {
-            $relative = str_replace($root . \DIRECTORY_SEPARATOR, '', $testDirs[0]);
+            $relative = str_replace($root . DIRECTORY_SEPARATOR, '', $testDirs[0]);
             $suites['Default'] = $relative;
         }
 

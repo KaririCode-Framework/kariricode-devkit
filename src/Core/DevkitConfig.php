@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Core;
 
+use const DIRECTORY_SEPARATOR;
+
 use KaririCode\Devkit\Exception\ConfigurationException;
 
 /**
@@ -54,7 +56,7 @@ final readonly class DevkitConfig
 
     public function __construct(string $projectRoot)
     {
-        $configPath = $projectRoot . \DIRECTORY_SEPARATOR . self::CONFIG_FILE;
+        $configPath = $projectRoot . DIRECTORY_SEPARATOR . self::CONFIG_FILE;
 
         if (! is_file($configPath)) {
             $this->overrides = [];

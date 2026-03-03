@@ -6,6 +6,7 @@ namespace KaririCode\Devkit\Configuration;
 
 use KaririCode\Devkit\Contract\ConfigGenerator;
 use KaririCode\Devkit\Core\ProjectContext;
+use Override;
 
 /**
  * Generates `.kcode/phpstan.neon`.
@@ -14,19 +15,19 @@ use KaririCode\Devkit\Core\ProjectContext;
  */
 final class PhpStanConfigGenerator implements ConfigGenerator
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'phpstan';
     }
 
-    #[\Override]
+    #[Override]
     public function outputPath(): string
     {
         return 'phpstan.neon';
     }
 
-    #[\Override]
+    #[Override]
     public function generate(ProjectContext $context): string
     {
         $paths = implode("\n", array_map(

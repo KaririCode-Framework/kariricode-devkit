@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KaririCode\Devkit\Runner;
 
+use Override;
+
 /**
  * Runs Rector with the generated `.kcode/rector.php`.
  *
@@ -13,19 +15,19 @@ namespace KaririCode\Devkit\Runner;
  */
 final class RectorRunner extends AbstractToolRunner
 {
-    #[\Override]
+    #[Override]
     public function toolName(): string
     {
         return 'rector';
     }
 
-    #[\Override]
+    #[Override]
     protected function vendorBin(): string
     {
         return 'vendor/bin/rector';
     }
 
-    #[\Override]
+    #[Override]
     protected function defaultArguments(): array
     {
         return [
