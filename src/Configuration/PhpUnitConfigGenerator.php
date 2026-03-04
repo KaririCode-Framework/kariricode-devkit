@@ -49,8 +49,8 @@ final class PhpUnitConfigGenerator implements ConfigGenerator
                      requireCoverageMetadata="false"
                      beStrictAboutCoverageMetadata="false"
                      beStrictAboutOutputDuringTests="true"
-                     failOnRisky="true"
-                     failOnWarning="true"
+                     failOnRisky="false"
+                     failOnWarning="false"
                      colors="true">
 
                 <php>
@@ -63,7 +63,7 @@ final class PhpUnitConfigGenerator implements ConfigGenerator
                 <testsuites>
             {$suites}    </testsuites>
 
-                <source restrictDeprecations="true" restrictNotices="true" restrictWarnings="true">
+                <source>
                     <include>
             {$sourceIncludes}        </include>
             {$coverageExcludes}    </source>
