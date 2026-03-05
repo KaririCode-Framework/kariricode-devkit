@@ -68,6 +68,7 @@ declare(strict_types=1);
         $devkit->addRunner(new \KaririCode\Devkit\Runner\PhpStanRunner($executor, $context));
         $devkit->addRunner(new \KaririCode\Devkit\Runner\CsFixerRunner($executor, $context));
         $devkit->addRunner(new \KaririCode\Devkit\Runner\RectorRunner($executor, $context));
+        $devkit->addRunner(new \KaririCode\Devkit\Runner\RectorApplyRunner($executor, $context));
         $devkit->addRunner(new \KaririCode\Devkit\Runner\PsalmRunner($executor, $context));
         $devkit->addRunner(new \KaririCode\Devkit\Runner\ComposerAuditRunner($executor, $context));
     }
