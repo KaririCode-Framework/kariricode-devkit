@@ -50,9 +50,9 @@ final class FormatCommand extends AbstractCommand
         }
 
         // Step 2: Rector apply (--no-dry-run overrides runner default)
-        if ($devkit->isToolAvailable('rector')) {
+        if ($devkit->isToolAvailable('rector-apply')) {
             $this->line("\033[1m▸ Running rector process…\033[0m");
-            $result = $devkit->run('rector', ['--no-dry-run', ...$arguments]);
+            $result = $devkit->run('rector-apply', $arguments);
             $this->line($result->output());
 
             if ($result->success) {

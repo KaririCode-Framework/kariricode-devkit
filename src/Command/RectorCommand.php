@@ -36,10 +36,10 @@ final class RectorCommand extends AbstractCommand
 
         $passthrough = $this->passthrough($arguments, ['--fix', '--apply']);
 
-        // RectorRunner defaults to --dry-run for safety.
-        // When applying, --no-dry-run overrides it (Rector: last flag wins).
+        // RectorRunner defaults to --dry-run (preview only).
+        // RectorApplyRunner runs without --dry-run (applies changes).
         $result = $apply
-            ? $devkit->run('rector', ['--no-dry-run', ...$passthrough])
+            ? $devkit->run('rector-apply', $passthrough)
             : $devkit->run('rector', $passthrough);
 
         $this->line($result->output());
